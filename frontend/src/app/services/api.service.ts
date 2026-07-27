@@ -1,0 +1,112 @@
+import { Injectable, inject } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
+
+@Injectable({ providedIn: 'root' })
+export class ApiService {
+  private http = inject(HttpClient);
+
+  login(username: string, password: string): Observable<{ token: string; user: any }> {
+    return this.http.post<{ token: string; user: any }>('/api/auth/login', { username, password });
+  }
+
+  changePassword(newPassword: string): Observable<{ token: string; message: string }> {
+    return this.http.post<{ token: string; message: string }>('/api/auth/change-password', { newPassword });
+  }
+
+  getUsers(): Observable<any[]> {
+    return this.http.get<any[]>('/api/users');
+  }
+
+  createUser(username: string, password: string, role: string): Observable<any> {
+    return this.http.post('/api/users', { username, password, role });
+  }
+
+  deleteUser(id: number): Observable<any> {
+    return this.http.delete(`/api/users/${id}`);
+  }
+
+  searchTMDB(query: string): Observable<{ results: any[] }> {
+    return this.http.get<{ results: any[] }>(`/api/search?query=${encodeURIComponent(query)}`);
+  }
+
+  getCatalog(): Observable<{ catalog: any[] }> {
+    return this.http.get<{ catalog: any[] }>('/api/catalog');
+  }
+
+  addToCatalog(tmdbId: number, type: string): Observable<any> {
+    return this.http.post('/api/catalog/add', { tmdb_id: tmdbId, type });
+  }
+
+  addSeriesToCatalog(tmdbId: number, selectedEpisodes: any[]): Observable<any> {
+    return this.http.post('/api/catalog/add-series', { tmdb_id: tmdbId, selected_episodes: selectedEpisodes });
+  }
+
+  removeFromCatalog(mediaId: number): Observable<any> {
+    return this.http.delete(`/api/catalog/${mediaId}`);
+  }
+
+  getMedia(id: number): Observable<{ media: any; episodes: any[] }> {
+    return this.http.get<{ media: any; episodes: any[] }>(`/api/media/${id}`);
+  }
+
+  getSeriesSeasons(tmdbId: number): Observable<{ seasons: any[] }> {
+    return this.http.get<{ seasons: any[] }>(`/api/tmdb/series/${tmdbId}/seasons`);
+  }
+
+  getSeasonEpisodes(tmdbId: number, seasonNumber: number): Observable<{ episodes: any[] }> {
+    return this.http.get<{ episodes: any[] }>(`/api/tmdb/series/${tmdbId}/season/${seasonNumber}`);
+  }
+
+  startDownload(mediaId: number, episodeId?: number): Observable<any> {
+    return this.http.post(`/api/download/start/${mediaId}`, { episodeId });
+  }
+
+  retryDownload(mediaId: number, episodeId?: number): Observable<any> {
+    return this.http.post(`/api/download/retry/${mediaId}`, { episodeId });
+  }
+
+  getDownloadStatus(): Observable<{ downloads: any[] }> {
+    return this.http.get<{ downloads: any[] }>('/api/download/status');
+  }
+
+  getSubtitles(mediaId: number): Observable<{ subtitles: any[] }> {
+    return this.http.get<{ subtitles: any[] }>(`/api/subtitles/${mediaId}`);
+  }
+
+  getEpisodeSubtitles(episodeId: number): Observable<{ subtitles: any[] }> {
+    return this.http.get<{ subtitles: any[] }>(`/api/subtitles/episode/${episodeId}`);
+  }
+
+  searchSubtitles(mediaId: number, language: string): Observable<{ results: any[] }> {
+    return this.http.get<{ results: any[] }>(`/api/subtitles/search?mediaId=${mediaId}&language=${language}`);
+  }
+
+  downloadSubtitle(fileId: number, mediaId: number, language: string): Observable<any> {
+    return this.http.post('/api/subtitles/download', { fileId, mediaId, language });
+  }
+
+  getStorageStatus(): Observable<any> {
+    return this.http.get('/api/storage/status');
+  }
+
+  saveProgress(mediaId: number | undefined, episodeId: number | undefined, stoppedAtSeconds: number): Observable<any> {
+    return this.http.post('/api/progress', { mediaId, episodeId, stoppedAtSeconds });
+  }
+
+  getProgress(mediaId: number): Observable<{ progress: any }> {
+    return this.http.get<{ progress: any }>(`/api/progress/${mediaId}`);
+  }
+
+  getEpisodeProgress(episodeId: number): Observable<{ progress: any }> {
+    return this.http.get<{ progress: any }>(`/api/progress/episode/${episodeId}`);
+  }
+
+  getSettings(): Observable<{ settings: any }> {
+    return this.http.get<{ settings: any }>('/api/settings');
+  }
+
+  updateSettings(settings: any): Observable<any> {
+    return this.http.put('/api/settings', { settings });
+  }
+}
