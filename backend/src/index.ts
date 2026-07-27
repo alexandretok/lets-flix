@@ -8,7 +8,9 @@ import { authRoutes } from './routes/auth.routes.js';
 import { usersRoutes } from './routes/users.routes.js';
 import { catalogRoutes } from './routes/catalog.routes.js';
 import { downloadRoutes } from './routes/download.routes.js';
+import { subtitlesRoutes } from './routes/subtitles.routes.js';
 import { downloadService } from './services/download.service.js';
+import { subtitlesService } from './services/subtitles.service.js';
 
 const app = Fastify({ logger: true });
 
@@ -23,11 +25,21 @@ console.log('Database initialized successfully');
 await downloadService.initialize();
 await downloadService.resumeDownloads();
 
+// Auto-download subtitles on download completion
+downloadService.on('complete', async ({ mediaId, episodeId }) => {
+  try {
+    await subtitlesService.autoDownloadSubtitles(mediaId, episodeId);
+  } catch (error) {
+    console.error('Auto subtitle download failed:', error);
+  }
+});
+
 // Register routes
 await app.register(authRoutes);
 await app.register(usersRoutes);
 await app.register(catalogRoutes);
 await app.register(downloadRoutes);
+await app.register(subtitlesRoutes);
 
 app.get('/api/health', async () => {
   return { status: 'ok', timestamp: new Date().toISOString() };
