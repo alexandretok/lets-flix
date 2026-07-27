@@ -1,0 +1,10 @@
+node_modules/
+dist/
+.env
+*.sqlite
+*.sqlite-journal
+.angular/
+.DS_Store
+coverage/
+tmp/
+downloads/

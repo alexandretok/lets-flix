@@ -1,0 +1,16 @@
+{
+  "name": "letsflix",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Self-hosted multi-user streaming application",
+  "scripts": {
+    "backend:dev": "npm run dev --prefix backend",
+    "backend:build": "npm run build --prefix backend",
+    "frontend:dev": "npm run start --prefix frontend",
+    "frontend:build": "npm run build --prefix frontend",
+    "dev": "concurrently \"npm run backend:dev\" \"npm run frontend:dev\""
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.0"
+  }
+}
