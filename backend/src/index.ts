@@ -4,6 +4,8 @@ import cors from '@fastify/cors';
 import jwt from '@fastify/jwt';
 import { config } from './config/env.js';
 import { getDb } from './database/init.js';
+import { authRoutes } from './routes/auth.routes.js';
+import { usersRoutes } from './routes/users.routes.js';
 
 const app = Fastify({ logger: true });
 
@@ -13,6 +15,10 @@ await app.register(jwt, { secret: config.jwtSecret });
 // Initialize database
 getDb();
 console.log('Database initialized successfully');
+
+// Register routes
+await app.register(authRoutes);
+await app.register(usersRoutes);
 
 app.get('/api/health', async () => {
   return { status: 'ok', timestamp: new Date().toISOString() };
