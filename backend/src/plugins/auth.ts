@@ -18,19 +18,19 @@ export async function authenticate(request: FastifyRequest, reply: FastifyReply)
   try {
     await request.jwtVerify();
   } catch (err) {
-    reply.status(401).send({ error: 'Unauthorized' });
+    return reply.status(401).send({ error: 'Unauthorized' });
   }
 }
 
 export async function requirePasswordChanged(request: FastifyRequest, reply: FastifyReply): Promise<void> {
   if (request.user.requires_password_change) {
-    reply.status(403).send({ error: 'Password change required', code: 'PASSWORD_CHANGE_REQUIRED' });
+    return reply.status(403).send({ error: 'Password change required', code: 'PASSWORD_CHANGE_REQUIRED' });
   }
 }
 
 export async function requireAdmin(request: FastifyRequest, reply: FastifyReply): Promise<void> {
   if (request.user.role !== 'admin') {
-    reply.status(403).send({ error: 'Admin access required' });
+    return reply.status(403).send({ error: 'Admin access required' });
   }
 }
 

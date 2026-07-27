@@ -90,8 +90,8 @@ export class ApiService {
     return this.http.get('/api/storage/status');
   }
 
-  saveProgress(mediaId: number | undefined, episodeId: number | undefined, stoppedAtSeconds: number): Observable<any> {
-    return this.http.post('/api/progress', { mediaId, episodeId, stoppedAtSeconds });
+  saveProgress(mediaId: number | undefined, episodeId: number | undefined, stoppedAtSeconds: number, duration?: number): Observable<any> {
+    return this.http.post('/api/progress', { mediaId, episodeId, stoppedAtSeconds, duration });
   }
 
   getProgress(mediaId: number): Observable<{ progress: any }> {

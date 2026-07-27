@@ -1,5 +1,5 @@
 import { Component, inject, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { Tag } from 'primeng/tag';
 import { Button } from 'primeng/button';
@@ -8,7 +8,7 @@ import { ApiService } from '../../services/api.service';
 
 @Component({
   selector: 'app-browse',
-  imports: [CommonModule, Tag, Button, LayoutComponent],
+  imports: [CommonModule, RouterLink, Tag, Button, LayoutComponent],
   template: `
     <app-layout>
       <div class="browse-header">

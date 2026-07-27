@@ -11,19 +11,33 @@ export async function progressRoutes(app: FastifyInstance): Promise<void> {
   app.addHook('preHandler', requirePasswordChanged);
 
   app.post('/api/progress', async (request) => {
-    const { mediaId, episodeId, stoppedAtSeconds } = request.body as {
+    const { mediaId, episodeId, stoppedAtSeconds, duration: clientDuration } = request.body as {
       mediaId?: number;
       episodeId?: number;
       stoppedAtSeconds: number;
+      duration?: number;
     };
 
     const userId = request.user.userId;
     let duration: number | null = null;
     let isWatched = false;
+    let resolvedMediaId = mediaId;
 
     if (mediaId) {
       const media = mediaRepository.findById(mediaId);
       duration = media?.duration || null;
+    }
+
+    if (episodeId && !resolvedMediaId) {
+      const episode = episodesRepository.findById(episodeId);
+      if (episode) {
+        resolvedMediaId = episode.media_id;
+      }
+    }
+
+    // Use client-provided duration for episodes (where DB duration is null)
+    if (!duration && clientDuration) {
+      duration = clientDuration;
     }
 
     // 90% completion rule
@@ -33,18 +47,18 @@ export async function progressRoutes(app: FastifyInstance): Promise<void> {
 
     watchProgressRepository.upsert({
       user_id: userId,
-      media_id: mediaId,
+      media_id: resolvedMediaId,
       episode_id: episodeId,
       stopped_at_seconds: stoppedAtSeconds,
       is_watched: isWatched,
     });
 
     // Auto-delete check
-    if (isWatched && mediaId) {
+    if (isWatched && resolvedMediaId) {
       const autoDelete = settingsRepository.get('auto_delete_watched');
       if (autoDelete === 'true') {
-        if (watchProgressRepository.isWatchedByAllUsers(mediaId)) {
-          storageService.deleteMediaFile(mediaId);
+        if (watchProgressRepository.isWatchedByAllUsers(resolvedMediaId)) {
+          storageService.deleteMediaFile(resolvedMediaId);
         }
       }
     }

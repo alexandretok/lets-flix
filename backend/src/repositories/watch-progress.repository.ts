@@ -25,16 +25,27 @@ export const watchProgressRepository = {
 
   upsert(data: { user_id: number; media_id?: number; episode_id?: number; stopped_at_seconds: number; is_watched?: boolean }): void {
     const isWatched = data.is_watched ? 1 : 0;
-    getDb().prepare(`
-      INSERT INTO watch_progress (user_id, media_id, episode_id, stopped_at_seconds, is_watched, updated_at)
-      VALUES (?, ?, ?, ?, ?, datetime('now'))
-      ON CONFLICT(user_id, media_id, episode_id)
-      DO UPDATE SET stopped_at_seconds = ?, is_watched = ?, updated_at = datetime('now')
-    `).run(
-      data.user_id, data.media_id || null, data.episode_id || null,
-      data.stopped_at_seconds, isWatched,
-      data.stopped_at_seconds, isWatched
-    );
+    const mediaId = data.media_id || null;
+    const episodeId = data.episode_id || null;
+
+    // SQLite treats NULLs as distinct in UNIQUE constraints, so use a manual check
+    let existing: WatchProgress | undefined;
+    if (episodeId) {
+      existing = this.findByUserAndEpisode(data.user_id, episodeId);
+    } else if (mediaId) {
+      existing = this.findByUserAndMedia(data.user_id, mediaId);
+    }
+
+    if (existing) {
+      getDb().prepare(`
+        UPDATE watch_progress SET stopped_at_seconds = ?, is_watched = ?, updated_at = datetime('now') WHERE id = ?
+      `).run(data.stopped_at_seconds, isWatched, existing.id);
+    } else {
+      getDb().prepare(`
+        INSERT INTO watch_progress (user_id, media_id, episode_id, stopped_at_seconds, is_watched, updated_at)
+        VALUES (?, ?, ?, ?, ?, datetime('now'))
+      `).run(data.user_id, mediaId, episodeId, data.stopped_at_seconds, isWatched);
+    }
   },
 
   isWatchedByAllUsers(mediaId: number): boolean {

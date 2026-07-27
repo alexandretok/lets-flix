@@ -1,6 +1,5 @@
 import { Component, inject, OnInit, OnDestroy } from '@angular/core';
-import { RouterOutlet, RouterLink, RouterLinkActive, Router } from '@angular/router';
-import { Sidebar } from 'primeng/sidebar';
+import { RouterLink, RouterLinkActive, Router } from '@angular/router';
 import { Button } from 'primeng/button';
 import { ProgressBarModule } from 'primeng/progressbar';
 import { AuthStore } from '../stores/auth.store';
@@ -10,7 +9,7 @@ import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-layout',
-  imports: [CommonModule, RouterOutlet, RouterLink, RouterLinkActive, Button, ProgressBarModule],
+  imports: [CommonModule, RouterLink, RouterLinkActive, Button, ProgressBarModule],
   template: `
     <div class="app-layout">
       <nav class="sidebar">
@@ -37,7 +36,7 @@ import { CommonModule } from '@angular/common';
         </div>
       </nav>
       <main class="main-content">
-        <router-outlet />
+        <ng-content />
       </main>
     </div>
   `,

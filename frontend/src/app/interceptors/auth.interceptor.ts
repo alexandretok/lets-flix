@@ -1,6 +1,7 @@
 import { HttpInterceptorFn } from '@angular/common/http';
 import { inject } from '@angular/core';
 import { Router } from '@angular/router';
+import { tap, catchError, throwError } from 'rxjs';
 import { AuthStore } from '../stores/auth.store';
 
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
@@ -14,5 +15,13 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
     });
   }
 
-  return next(req);
+  return next(req).pipe(
+    catchError((error) => {
+      if (error.status === 401) {
+        authStore.logout();
+        router.navigate(['/login']);
+      }
+      return throwError(() => error);
+    })
+  );
 };

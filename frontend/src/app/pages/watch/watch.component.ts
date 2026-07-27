@@ -157,7 +157,9 @@ export class WatchComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   private saveProgress(seconds: number): void {
-    this.api.saveProgress(this.mediaId, this.episodeId, seconds).subscribe();
+    const video = this.videoRef?.nativeElement;
+    const duration = video?.duration ? Math.floor(video.duration) : undefined;
+    this.api.saveProgress(this.mediaId, this.episodeId, seconds, duration).subscribe();
   }
 
   goBack(): void {

@@ -39,14 +39,14 @@ class DownloadService extends EventEmitter {
     if (!media) return { success: false, message: 'Media not found' };
 
     // Check deduplication
-    if (!episodeId && (media.status === 'downloaded' || media.status === 'downloading')) {
+    if (!episodeId && (media.status === 'downloaded' || media.status === 'downloading' || media.status === 'searching')) {
       return { success: false, message: `Media already ${media.status}` };
     }
 
     if (episodeId) {
       const episode = episodesRepository.findById(episodeId);
       if (!episode) return { success: false, message: 'Episode not found' };
-      if (episode.status === 'downloaded' || episode.status === 'downloading') {
+      if (episode.status === 'downloaded' || episode.status === 'downloading' || episode.status === 'searching') {
         return { success: false, message: `Episode already ${episode.status}` };
       }
     }
