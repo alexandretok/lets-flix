@@ -9,8 +9,11 @@ import { usersRoutes } from './routes/users.routes.js';
 import { catalogRoutes } from './routes/catalog.routes.js';
 import { downloadRoutes } from './routes/download.routes.js';
 import { subtitlesRoutes } from './routes/subtitles.routes.js';
+import { eventsRoutes } from './routes/events.routes.js';
+import { storageRoutes } from './routes/storage.routes.js';
 import { downloadService } from './services/download.service.js';
 import { subtitlesService } from './services/subtitles.service.js';
+import { sseService } from './services/sse.service.js';
 
 const app = Fastify({ logger: true });
 
@@ -24,6 +27,11 @@ console.log('Database initialized successfully');
 // Initialize download service
 await downloadService.initialize();
 await downloadService.resumeDownloads();
+
+// Wire download progress to SSE
+downloadService.on('progress', (data) => {
+  sseService.broadcast('download-progress', data);
+});
 
 // Auto-download subtitles on download completion
 downloadService.on('complete', async ({ mediaId, episodeId }) => {
@@ -40,6 +48,8 @@ await app.register(usersRoutes);
 await app.register(catalogRoutes);
 await app.register(downloadRoutes);
 await app.register(subtitlesRoutes);
+await app.register(eventsRoutes);
+await app.register(storageRoutes);
 
 app.get('/api/health', async () => {
   return { status: 'ok', timestamp: new Date().toISOString() };
