@@ -6,6 +6,7 @@ import { config } from './config/env.js';
 import { getDb } from './database/init.js';
 import { authRoutes } from './routes/auth.routes.js';
 import { usersRoutes } from './routes/users.routes.js';
+import { catalogRoutes } from './routes/catalog.routes.js';
 
 const app = Fastify({ logger: true });
 
@@ -19,6 +20,7 @@ console.log('Database initialized successfully');
 // Register routes
 await app.register(authRoutes);
 await app.register(usersRoutes);
+await app.register(catalogRoutes);
 
 app.get('/api/health', async () => {
   return { status: 'ok', timestamp: new Date().toISOString() };
