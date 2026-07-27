@@ -7,6 +7,8 @@ import { getDb } from './database/init.js';
 import { authRoutes } from './routes/auth.routes.js';
 import { usersRoutes } from './routes/users.routes.js';
 import { catalogRoutes } from './routes/catalog.routes.js';
+import { downloadRoutes } from './routes/download.routes.js';
+import { downloadService } from './services/download.service.js';
 
 const app = Fastify({ logger: true });
 
@@ -17,10 +19,15 @@ await app.register(jwt, { secret: config.jwtSecret });
 getDb();
 console.log('Database initialized successfully');
 
+// Initialize download service
+await downloadService.initialize();
+await downloadService.resumeDownloads();
+
 // Register routes
 await app.register(authRoutes);
 await app.register(usersRoutes);
 await app.register(catalogRoutes);
+await app.register(downloadRoutes);
 
 app.get('/api/health', async () => {
   return { status: 'ok', timestamp: new Date().toISOString() };
