@@ -6,6 +6,7 @@ import { AuthStore } from '../stores/auth.store';
 import { ApiService } from '../services/api.service';
 import { SSEService } from '../services/sse.service';
 import { CommonModule } from '@angular/common';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-layout',
@@ -19,6 +20,7 @@ export class LayoutComponent implements OnInit, OnDestroy {
   private router = inject(Router);
   private sseService = inject(SSEService);
   private cdr = inject(ChangeDetectorRef);
+  private sseSub?: Subscription;
 
   storagePercent = 0;
   storageWarning = false;
@@ -26,9 +28,16 @@ export class LayoutComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.sseService.connect();
     this.loadStorage();
+
+    this.sseSub = this.sseService.downloadProgress$.subscribe((event) => {
+      if (event.status === 'downloaded') {
+        this.loadStorage();
+      }
+    });
   }
 
   ngOnDestroy(): void {
+    this.sseSub?.unsubscribe();
     this.sseService.disconnect();
   }
 
