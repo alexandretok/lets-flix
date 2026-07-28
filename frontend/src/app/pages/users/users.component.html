@@ -21,7 +21,8 @@
         <td>{{ user.requires_password_change ? 'Yes' : 'No' }}</td>
         <td>
           @if (user.id !== authStore.user()?.id) {
-            <p-button icon="pi pi-trash" [text]="true" severity="danger" (onClick)="deleteUser(user)" />
+            <p-button icon="pi pi-key" [text]="true" severity="warn" (onClick)="resetPassword(user)" pTooltip="Reset password" />
+            <p-button icon="pi pi-trash" [text]="true" severity="danger" (onClick)="deleteUser(user)" pTooltip="Delete user" />
           }
         </td>
       </tr>
@@ -36,13 +37,21 @@
       <input pInputText [(ngModel)]="newUsername" class="w-full" />
     </div>
     <div class="field">
-      <label>Password</label>
-      <input pInputText [(ngModel)]="newPassword" type="password" class="w-full" />
-    </div>
-    <div class="field">
       <label>Role</label>
       <p-select [options]="roleOptions" [(ngModel)]="newRole" optionLabel="label" optionValue="value" [style]="{width: '100%'}" />
     </div>
-    <p-button label="Create" icon="pi pi-check" severity="danger" (onClick)="createUser()" [disabled]="!newUsername || !newPassword" styleClass="w-full" />
+    <p class="info-text">A temporary password will be generated automatically. The user will be required to change it on first login.</p>
+    <p-button label="Create" icon="pi pi-check" severity="danger" (onClick)="createUser()" [disabled]="!newUsername" styleClass="w-full" />
+  </div>
+</p-dialog>
+
+<p-dialog header="Temporary Password" [(visible)]="showPasswordDialog" [modal]="true" [style]="{width: '420px'}" [closable]="true">
+  <div class="password-display">
+    <p>Temporary password for <strong>{{ generatedForUser }}</strong>:</p>
+    <div class="password-box">
+      <code>{{ generatedPassword }}</code>
+      <p-button icon="pi pi-copy" [text]="true" (onClick)="copyPassword()" pTooltip="Copy" />
+    </div>
+    <p class="info-text">The user will be required to change this password on first login. Make sure to save it now — it won't be shown again.</p>
   </div>
 </p-dialog>

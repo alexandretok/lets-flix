@@ -1,7 +1,12 @@
 import { FastifyInstance } from 'fastify';
+import crypto from 'crypto';
 import bcrypt from 'bcrypt';
 import { usersRepository } from '../repositories/users.repository.js';
 import { authenticate, requirePasswordChanged, requireAdmin } from '../plugins/auth.js';
+
+function generatePassword(): string {
+  return crypto.randomBytes(6).toString('base64url');
+}
 
 export async function usersRoutes(app: FastifyInstance): Promise<void> {
   app.addHook('preHandler', authenticate);
@@ -13,14 +18,13 @@ export async function usersRoutes(app: FastifyInstance): Promise<void> {
   });
 
   app.post('/api/users', async (request, reply) => {
-    const { username, password, role } = request.body as {
+    const { username, role } = request.body as {
       username: string;
-      password: string;
       role?: 'admin' | 'user';
     };
 
-    if (!username || !password) {
-      return reply.status(400).send({ error: 'Username and password are required' });
+    if (!username) {
+      return reply.status(400).send({ error: 'Username is required' });
     }
 
     const existing = usersRepository.findByUsername(username);
@@ -28,9 +32,26 @@ export async function usersRoutes(app: FastifyInstance): Promise<void> {
       return reply.status(409).send({ error: 'Username already exists' });
     }
 
-    const hash = await bcrypt.hash(password, 10);
+    const tempPassword = generatePassword();
+    const hash = await bcrypt.hash(tempPassword, 10);
     const user = usersRepository.create(username, hash, role || 'user');
-    return reply.status(201).send(user);
+    return reply.status(201).send({ ...user, tempPassword });
+  });
+
+  app.post('/api/users/:id/reset-password', async (request, reply) => {
+    const { id } = request.params as { id: string };
+    const userId = parseInt(id, 10);
+
+    const user = usersRepository.findById(userId);
+    if (!user) {
+      return reply.status(404).send({ error: 'User not found' });
+    }
+
+    const tempPassword = generatePassword();
+    const hash = await bcrypt.hash(tempPassword, 10);
+    usersRepository.resetPassword(userId, hash);
+
+    return { tempPassword };
   });
 
   app.delete('/api/users/:id', async (request, reply) => {

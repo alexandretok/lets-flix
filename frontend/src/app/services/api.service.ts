@@ -18,8 +18,12 @@ export class ApiService {
     return this.http.get<any[]>('/api/users');
   }
 
-  createUser(username: string, password: string, role: string): Observable<any> {
-    return this.http.post('/api/users', { username, password, role });
+  createUser(username: string, role: string): Observable<any> {
+    return this.http.post('/api/users', { username, role });
+  }
+
+  resetPassword(userId: number): Observable<{ tempPassword: string }> {
+    return this.http.post<{ tempPassword: string }>(`/api/users/${userId}/reset-password`, {});
   }
 
   deleteUser(id: number): Observable<any> {

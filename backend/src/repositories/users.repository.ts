@@ -35,6 +35,10 @@ export const usersRepository = {
     getDb().prepare('UPDATE users SET password_hash = ?, requires_password_change = 0 WHERE id = ?').run(passwordHash, id);
   },
 
+  resetPassword(id: number, passwordHash: string): void {
+    getDb().prepare('UPDATE users SET password_hash = ?, requires_password_change = 1 WHERE id = ?').run(passwordHash, id);
+  },
+
   delete(id: number): void {
     getDb().prepare('DELETE FROM users WHERE id = ?').run(id);
   },

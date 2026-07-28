@@ -26,8 +26,10 @@ export class UsersComponent implements OnInit {
 
   users: any[] = [];
   showCreateDialog = false;
+  showPasswordDialog = false;
+  generatedPassword = '';
+  generatedForUser = '';
   newUsername = '';
-  newPassword = '';
   newRole = 'user';
 
   roleOptions = [
@@ -46,18 +48,35 @@ export class UsersComponent implements OnInit {
   }
 
   createUser(): void {
-    this.api.createUser(this.newUsername, this.newPassword, this.newRole).subscribe({
-      next: () => {
+    this.api.createUser(this.newUsername, this.newRole).subscribe({
+      next: (res) => {
         this.showCreateDialog = false;
+        this.generatedPassword = res.tempPassword;
+        this.generatedForUser = this.newUsername;
+        this.showPasswordDialog = true;
         this.newUsername = '';
-        this.newPassword = '';
         this.newRole = 'user';
         this.loadUsers();
-        this.messageService.add({ severity: 'success', summary: 'Created', detail: 'User created successfully' });
         this.cdr.markForCheck();
       },
       error: (err) => {
         this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error?.error || 'Failed to create user' });
+        this.cdr.markForCheck();
+      }
+    });
+  }
+
+  resetPassword(user: any): void {
+    this.api.resetPassword(user.id).subscribe({
+      next: (res) => {
+        this.generatedPassword = res.tempPassword;
+        this.generatedForUser = user.username;
+        this.showPasswordDialog = true;
+        this.loadUsers();
+        this.cdr.markForCheck();
+      },
+      error: (err) => {
+        this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error?.error || 'Failed to reset password' });
         this.cdr.markForCheck();
       }
     });
@@ -74,5 +93,10 @@ export class UsersComponent implements OnInit {
         this.cdr.markForCheck();
       }
     });
+  }
+
+  copyPassword(): void {
+    navigator.clipboard.writeText(this.generatedPassword);
+    this.messageService.add({ severity: 'info', summary: 'Copied', detail: 'Password copied to clipboard' });
   }
 }
