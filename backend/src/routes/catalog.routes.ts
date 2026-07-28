@@ -9,6 +9,14 @@ export async function catalogRoutes(app: FastifyInstance): Promise<void> {
   app.addHook('preHandler', authenticate);
   app.addHook('preHandler', requirePasswordChanged);
 
+  app.get('/api/trending', async () => {
+    const [movies, tv] = await Promise.all([
+      tmdbService.getTrendingMovies(),
+      tmdbService.getTrendingTv(),
+    ]);
+    return { movies, tv };
+  });
+
   app.get('/api/search', async (request) => {
     const { query } = request.query as { query?: string };
     if (!query || query.trim().length === 0) {

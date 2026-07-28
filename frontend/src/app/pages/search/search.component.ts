@@ -1,6 +1,7 @@
-import { Component, inject, ChangeDetectorRef } from '@angular/core';
+import { Component, inject, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { ActivatedRoute } from '@angular/router';
 import { InputText } from 'primeng/inputtext';
 import { Button } from 'primeng/button';
 import { Dialog } from 'primeng/dialog';
@@ -16,10 +17,11 @@ import { ApiService } from '../../services/api.service';
   templateUrl: './search.component.html',
   styleUrl: './search.component.scss',
 })
-export class SearchComponent {
+export class SearchComponent implements OnInit {
   private api = inject(ApiService);
   private messageService = inject(MessageService);
   private cdr = inject(ChangeDetectorRef);
+  private route = inject(ActivatedRoute);
 
   query = '';
   results: any[] = [];
@@ -29,6 +31,14 @@ export class SearchComponent {
   seasons: any[] = [];
   previewImageUrl: string | null = null;
   private lastClickedEpisode: { season: any; index: number } | null = null;
+
+  ngOnInit(): void {
+    const q = this.route.snapshot.queryParams['q'];
+    if (q) {
+      this.query = q;
+      this.performSearch();
+    }
+  }
 
   performSearch(): void {
     if (!this.query || this.query.trim().length < 2) {

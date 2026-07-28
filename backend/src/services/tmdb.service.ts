@@ -1,5 +1,5 @@
 import { config } from '../config/env.js';
-import { mockSearchResults, mockMovieDetails, mockSeriesDetails, mockSeasonDetails } from '../mocks/tmdb.mock.js';
+import { mockSearchResults, mockMovieDetails, mockSeriesDetails, mockSeasonDetails, mockTrendingMovies, mockTrendingTv } from '../mocks/tmdb.mock.js';
 
 const TMDB_BASE_URL = 'https://api.themoviedb.org/3';
 const TMDB_IMAGE_BASE = 'https://image.tmdb.org/t/p/w500';
@@ -152,6 +152,62 @@ export const tmdbService = {
       episode_number: ep.episode_number,
       name: ep.name,
       overview: ep.overview,
+    }));
+  },
+
+  async getTrendingMovies(): Promise<TmdbSearchResult[]> {
+    if (config.useMocks) {
+      return mockTrendingMovies.results.map(r => ({
+        id: r.id,
+        media_type: 'movie' as const,
+        title: r.title,
+        overview: r.overview,
+        poster_url: posterUrl(r.poster_path),
+        release_date: r.release_date,
+        vote_average: r.vote_average,
+      }));
+    }
+
+    const res = await fetch(
+      `${TMDB_BASE_URL}/trending/movie/week?api_key=${config.tmdbApiKey}`
+    );
+    const data = await res.json() as any;
+    return (data.results || []).slice(0, 10).map((r: any) => ({
+      id: r.id,
+      media_type: 'movie' as const,
+      title: r.title,
+      overview: r.overview,
+      poster_url: posterUrl(r.poster_path),
+      release_date: r.release_date,
+      vote_average: r.vote_average,
+    }));
+  },
+
+  async getTrendingTv(): Promise<TmdbSearchResult[]> {
+    if (config.useMocks) {
+      return mockTrendingTv.results.map(r => ({
+        id: r.id,
+        media_type: 'tv' as const,
+        title: r.name,
+        overview: r.overview,
+        poster_url: posterUrl(r.poster_path),
+        release_date: r.first_air_date,
+        vote_average: r.vote_average,
+      }));
+    }
+
+    const res = await fetch(
+      `${TMDB_BASE_URL}/trending/tv/week?api_key=${config.tmdbApiKey}`
+    );
+    const data = await res.json() as any;
+    return (data.results || []).slice(0, 10).map((r: any) => ({
+      id: r.id,
+      media_type: 'tv' as const,
+      title: r.name,
+      overview: r.overview,
+      poster_url: posterUrl(r.poster_path),
+      release_date: r.first_air_date,
+      vote_average: r.vote_average,
     }));
   },
 

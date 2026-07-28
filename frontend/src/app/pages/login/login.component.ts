@@ -39,7 +39,7 @@ export class LoginComponent {
         if (res.user.requires_password_change) {
           this.router.navigate(['/setup-password']);
         } else {
-          this.router.navigate(['/browse']);
+          this.router.navigate(['/home']);
         }
       },
       error: (err) => {

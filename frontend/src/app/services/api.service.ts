@@ -26,6 +26,10 @@ export class ApiService {
     return this.http.delete(`/api/users/${id}`);
   }
 
+  getTrending(): Observable<{ movies: any[]; tv: any[] }> {
+    return this.http.get<{ movies: any[]; tv: any[] }>('/api/trending');
+  }
+
   searchTMDB(query: string): Observable<{ results: any[] }> {
     return this.http.get<{ results: any[] }>(`/api/search?query=${encodeURIComponent(query)}`);
   }

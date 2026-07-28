@@ -24,7 +24,7 @@ export const guestGuard: CanActivateFn = () => {
   const router = inject(Router);
 
   if (authStore.isAuthenticated() && !authStore.requiresPasswordChange()) {
-    router.navigate(['/browse']);
+    router.navigate(['/home']);
     return false;
   }
 
@@ -36,7 +36,7 @@ export const adminGuard: CanActivateFn = () => {
   const router = inject(Router);
 
   if (!authStore.isAdmin()) {
-    router.navigate(['/browse']);
+    router.navigate(['/home']);
     return false;
   }
 

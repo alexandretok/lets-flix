@@ -43,7 +43,7 @@ export class SetupPasswordComponent {
         this.authStore.passwordChanged(res.token);
         this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Password changed!' });
         this.cdr.markForCheck();
-        setTimeout(() => this.router.navigate(['/browse']), 1000);
+        setTimeout(() => this.router.navigate(['/home']), 1000);
       },
       error: (err) => {
         this.loading = false;

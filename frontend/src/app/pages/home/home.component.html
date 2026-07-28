@@ -1,0 +1,70 @@
+<div class="home-container">
+  <div class="welcome-section">
+    <h1>Welcome to <span class="brand">LetsFlix</span></h1>
+    <p class="tagline">Discover trending movies and series</p>
+  </div>
+
+  @if (loading) {
+    <div class="loading"><i class="pi pi-spin pi-spinner" style="font-size: 2rem;"></i></div>
+  }
+
+  @if (!loading) {
+    <section class="trending-section">
+      <div class="section-header">
+        <h2><i class="pi pi-bolt"></i> Trending Movies</h2>
+        <span class="time-window">This Week</span>
+      </div>
+      <div class="carousel-wrapper">
+        <div class="carousel">
+          @for (item of trendingMovies; track item.id) {
+            <div class="media-card" (click)="openSearch(item.title)">
+              <div class="poster">
+                @if (item.poster_url) {
+                  <img [src]="item.poster_url" [alt]="item.title" />
+                } @else {
+                  <div class="placeholder-poster"><i class="pi pi-image"></i></div>
+                }
+                <div class="rating-badge">
+                  <i class="pi pi-star-fill"></i> {{ item.vote_average | number:'1.1-1' }}
+                </div>
+              </div>
+              <div class="card-info">
+                <h4>{{ item.title }}</h4>
+                <span class="year">{{ item.release_date | slice:0:4 }}</span>
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+    </section>
+
+    <section class="trending-section">
+      <div class="section-header">
+        <h2><i class="pi pi-bolt"></i> Trending Series</h2>
+        <span class="time-window">This Week</span>
+      </div>
+      <div class="carousel-wrapper">
+        <div class="carousel">
+          @for (item of trendingTv; track item.id) {
+            <div class="media-card" (click)="openSearch(item.title)">
+              <div class="poster">
+                @if (item.poster_url) {
+                  <img [src]="item.poster_url" [alt]="item.title" />
+                } @else {
+                  <div class="placeholder-poster"><i class="pi pi-image"></i></div>
+                }
+                <div class="rating-badge">
+                  <i class="pi pi-star-fill"></i> {{ item.vote_average | number:'1.1-1' }}
+                </div>
+              </div>
+              <div class="card-info">
+                <h4>{{ item.title }}</h4>
+                <span class="year">{{ item.release_date | slice:0:4 }}</span>
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+    </section>
+  }
+</div>
