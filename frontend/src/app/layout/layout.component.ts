@@ -24,6 +24,7 @@ export class LayoutComponent implements OnInit, OnDestroy {
 
   storagePercent = 0;
   storageWarning = false;
+  storageFree = '';
 
   ngOnInit(): void {
     this.sseService.connect();
@@ -46,9 +47,18 @@ export class LayoutComponent implements OnInit, OnDestroy {
       next: (status: any) => {
         this.storagePercent = status.percentage;
         this.storageWarning = status.warning;
+        this.storageFree = this.formatBytes(status.free);
         this.cdr.markForCheck();
       }
     });
+  }
+
+  private formatBytes(bytes: number): string {
+    if (!bytes || bytes === 0) return '0 B';
+    const k = 1024;
+    const sizes = ['B', 'KB', 'MB', 'GB', 'TB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
   }
 
   logout(): void {

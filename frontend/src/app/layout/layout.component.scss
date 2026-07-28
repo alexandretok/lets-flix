@@ -36,7 +36,9 @@
   margin-bottom: 1rem;
 }
 .storage-section.warning { background: rgba(255,0,0,0.1); }
-.storage-label { font-size: 0.8rem; color: #a0a0a0; display: block; margin-bottom: 0.5rem; }
+.storage-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem; }
+.storage-label { font-size: 0.8rem; color: #a0a0a0; }
+.storage-free { font-size: 0.75rem; color: #ccc; }
 .user-section {
   display: flex;
   align-items: center;

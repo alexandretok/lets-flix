@@ -15,7 +15,10 @@
     </ul>
     <div class="sidebar-footer">
       <div class="storage-section" [class.warning]="storageWarning">
-        <span class="storage-label">Storage</span>
+        <div class="storage-header">
+          <span class="storage-label">Storage</span>
+          <span class="storage-free">{{ storageFree }} free</span>
+        </div>
         <p-progressbar [value]="storagePercent" [showValue]="true" [style]="{'height': '10px'}" />
       </div>
       <div class="user-section">
