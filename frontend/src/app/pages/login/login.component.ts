@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, ChangeDetectorRef } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { InputText } from 'primeng/inputtext';
@@ -83,6 +83,7 @@ export class LoginComponent {
   private api = inject(ApiService);
   private router = inject(Router);
   private messageService = inject(MessageService);
+  private cdr = inject(ChangeDetectorRef);
 
   username = '';
   password = '';
@@ -106,6 +107,7 @@ export class LoginComponent {
       error: (err) => {
         this.authStore.loginFailure(err.error?.error || 'Login failed');
         this.messageService.add({ severity: 'error', summary: 'Login Failed', detail: err.error?.error || 'Invalid credentials' });
+        this.cdr.markForCheck();
       }
     });
   }

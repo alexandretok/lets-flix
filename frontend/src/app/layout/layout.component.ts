@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, OnDestroy } from '@angular/core';
+import { Component, inject, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { RouterLink, RouterLinkActive, Router } from '@angular/router';
 import { Button } from 'primeng/button';
 import { ProgressBarModule } from 'primeng/progressbar';
@@ -95,6 +95,7 @@ export class LayoutComponent implements OnInit, OnDestroy {
   private api = inject(ApiService);
   private router = inject(Router);
   private sseService = inject(SSEService);
+  private cdr = inject(ChangeDetectorRef);
 
   storagePercent = 0;
   storageWarning = false;
@@ -113,6 +114,7 @@ export class LayoutComponent implements OnInit, OnDestroy {
       next: (status: any) => {
         this.storagePercent = status.percentage;
         this.storageWarning = status.warning;
+        this.cdr.markForCheck();
       }
     });
   }

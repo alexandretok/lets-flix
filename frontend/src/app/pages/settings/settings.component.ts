@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MultiSelect } from 'primeng/multiselect';
@@ -78,6 +78,7 @@ import { ApiService } from '../../services/api.service';
 export class SettingsComponent implements OnInit {
   private api = inject(ApiService);
   private messageService = inject(MessageService);
+  private cdr = inject(ChangeDetectorRef);
 
   subtitleLanguages: string[] = [];
   allowedResolutions: string[] = [];
@@ -108,6 +109,7 @@ export class SettingsComponent implements OnInit {
         this.subtitleLanguages = s.subtitle_language || ['en'];
         this.allowedResolutions = s.allowed_resolutions || ['720p', '1080p'];
         this.autoDeleteWatched = s.auto_delete_watched === true || s.auto_delete_watched === 'true';
+        this.cdr.markForCheck();
       }
     });
   }
@@ -124,10 +126,12 @@ export class SettingsComponent implements OnInit {
       next: () => {
         this.saving = false;
         this.messageService.add({ severity: 'success', summary: 'Saved', detail: 'Settings updated successfully' });
+        this.cdr.markForCheck();
       },
       error: () => {
         this.saving = false;
         this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Failed to save settings' });
+        this.cdr.markForCheck();
       }
     });
   }

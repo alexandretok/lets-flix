@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, OnDestroy } from '@angular/core';
+import { Component, inject, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
@@ -162,6 +162,7 @@ export class ContentDetailsComponent implements OnInit, OnDestroy {
   private api = inject(ApiService);
   private sseService = inject(SSEService);
   private messageService = inject(MessageService);
+  private cdr = inject(ChangeDetectorRef);
   private sseSub?: Subscription;
 
   media: any = null;
@@ -194,6 +195,7 @@ export class ContentDetailsComponent implements OnInit, OnDestroy {
         if (event.status === 'downloaded') {
           this.loadMedia(this.media.id);
         }
+        this.cdr.markForCheck();
       }
     });
   }
@@ -209,6 +211,7 @@ export class ContentDetailsComponent implements OnInit, OnDestroy {
         this.episodes = res.episodes;
         this.groupEpisodes();
         this.loadSubtitles();
+        this.cdr.markForCheck();
       }
     });
   }
@@ -216,7 +219,7 @@ export class ContentDetailsComponent implements OnInit, OnDestroy {
   loadSubtitles(): void {
     if (this.media) {
       this.api.getSubtitles(this.media.id).subscribe({
-        next: (res) => { this.subtitles = res.subtitles; }
+        next: (res) => { this.subtitles = res.subtitles; this.cdr.markForCheck(); }
       });
     }
   }
@@ -239,9 +242,11 @@ export class ContentDetailsComponent implements OnInit, OnDestroy {
       next: () => {
         this.media.status = 'downloading';
         this.messageService.add({ severity: 'success', summary: 'Started', detail: 'Download started' });
+        this.cdr.markForCheck();
       },
       error: (err) => {
         this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error?.error || 'Failed' });
+        this.cdr.markForCheck();
       }
     });
   }
@@ -254,6 +259,7 @@ export class ContentDetailsComponent implements OnInit, OnDestroy {
       },
       error: (err) => {
         this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error?.error || 'Failed' });
+        this.cdr.markForCheck();
       }
     });
   }
@@ -298,6 +304,7 @@ export class ContentDetailsComponent implements OnInit, OnDestroy {
         } else {
           this.messageService.add({ severity: 'warn', summary: 'Not Found', detail: 'No subtitles found for this language' });
         }
+        this.cdr.markForCheck();
       }
     });
   }

@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, ChangeDetectorRef } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Password } from 'primeng/password';
@@ -86,6 +86,7 @@ export class SetupPasswordComponent {
   private api = inject(ApiService);
   private router = inject(Router);
   private messageService = inject(MessageService);
+  private cdr = inject(ChangeDetectorRef);
 
   newPassword = '';
   confirmPassword = '';
@@ -107,11 +108,13 @@ export class SetupPasswordComponent {
       next: (res) => {
         this.authStore.passwordChanged(res.token);
         this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Password changed!' });
+        this.cdr.markForCheck();
         setTimeout(() => this.router.navigate(['/browse']), 1000);
       },
       error: (err) => {
         this.loading = false;
         this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error?.error || 'Failed to change password' });
+        this.cdr.markForCheck();
       }
     });
   }

@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { InputText } from 'primeng/inputtext';
@@ -9,7 +9,6 @@ import { Checkbox } from 'primeng/checkbox';
 import { MessageService } from 'primeng/api';
 import { LayoutComponent } from '../../layout/layout.component';
 import { ApiService } from '../../services/api.service';
-import { Subject, debounceTime, distinctUntilChanged } from 'rxjs';
 
 @Component({
   selector: 'app-search',
@@ -22,9 +21,10 @@ import { Subject, debounceTime, distinctUntilChanged } from 'rxjs';
         <h1>Search</h1>
       </div>
       <div class="search-input-wrapper">
-        <span class="p-input-icon-left w-full">
-          <input pInputText [(ngModel)]="query" (ngModelChange)="onQueryChange($event)" placeholder="Search movies and series..." class="search-input" />
-        </span>
+        <div class="search-bar">
+          <input pInputText [(ngModel)]="query" placeholder="Search movies and series..." class="search-input" (keydown.enter)="performSearch()" />
+          <p-button icon="pi pi-search" severity="danger" (onClick)="performSearch()" [loading]="loading" />
+        </div>
       </div>
 
       @if (loading) {
@@ -68,7 +68,7 @@ import { Subject, debounceTime, distinctUntilChanged } from 'rxjs';
                   <div class="episodes-list">
                     @for (ep of season.episodes; track ep.episode_number) {
                       <div class="episode-item">
-                        <p-checkbox [(ngModel)]="ep.selected" [binary]="true" />
+                        <p-checkbox [(ngModel)]="ep.selected" [binary]="true" (onChange)="onEpisodeToggle(season)" />
                         <span>E{{ ep.episode_number }} - {{ ep.name }}</span>
                       </div>
                     }
@@ -88,7 +88,8 @@ import { Subject, debounceTime, distinctUntilChanged } from 'rxjs';
     .search-header { margin-bottom: 1.5rem; }
     .search-header h1 { color: #e0e0e0; margin: 0; }
     .search-input-wrapper { margin-bottom: 2rem; }
-    .search-input { width: 100%; padding: 0.75rem 1rem; font-size: 1.1rem; }
+    .search-bar { display: flex; gap: 0.5rem; align-items: stretch; }
+    .search-input { flex: 1; padding: 0.75rem 1rem; font-size: 1.1rem; }
     .w-full { width: 100%; }
     .loading { text-align: center; padding: 2rem; color: #a0a0a0; }
     .results-grid { display: flex; flex-direction: column; gap: 1rem; }
@@ -116,7 +117,7 @@ import { Subject, debounceTime, distinctUntilChanged } from 'rxjs';
     .result-info h4 { margin: 0 0 0.25rem; color: #e0e0e0; }
     .meta { font-size: 0.85rem; color: #a0a0a0; }
     .overview { font-size: 0.85rem; color: #888; margin: 0.5rem 0; }
-    .episodes-selector { max-height: 400px; overflow-y: auto; }
+    .episodes-selector { max-height: 50vh; overflow-y: auto; }
     .season-block { margin-bottom: 1rem; }
     .season-header {
       display: flex;
@@ -135,13 +136,21 @@ import { Subject, debounceTime, distinctUntilChanged } from 'rxjs';
       color: #ccc;
       font-size: 0.9rem;
     }
-    .dialog-footer { margin-top: 1rem; text-align: right; }
+    .dialog-footer {
+      margin-top: 1rem;
+      text-align: right;
+      position: sticky;
+      bottom: 0;
+      background: var(--p-dialog-background, #1e1e2e);
+      padding: 0.75rem 0 0;
+      border-top: 1px solid rgba(255,255,255,0.1);
+    }
   `]
 })
 export class SearchComponent {
   private api = inject(ApiService);
   private messageService = inject(MessageService);
-  private searchSubject = new Subject<string>();
+  private cdr = inject(ChangeDetectorRef);
 
   query = '';
   results: any[] = [];
@@ -150,26 +159,22 @@ export class SearchComponent {
   selectedSeries: any = null;
   seasons: any[] = [];
 
-  constructor() {
-    this.searchSubject.pipe(
-      debounceTime(400),
-      distinctUntilChanged()
-    ).subscribe(q => this.performSearch(q));
-  }
-
-  onQueryChange(q: string): void {
-    this.searchSubject.next(q);
-  }
-
-  performSearch(query: string): void {
-    if (!query || query.length < 2) {
+  performSearch(): void {
+    if (!this.query || this.query.trim().length < 2) {
       this.results = [];
       return;
     }
     this.loading = true;
-    this.api.searchTMDB(query).subscribe({
-      next: (res) => { this.results = res.results; this.loading = false; },
-      error: () => { this.loading = false; }
+    this.api.searchTMDB(this.query.trim()).subscribe({
+      next: (res) => {
+        this.results = res.results;
+        this.loading = false;
+        this.cdr.markForCheck();
+      },
+      error: () => {
+        this.loading = false;
+        this.cdr.markForCheck();
+      }
     });
   }
 
@@ -208,6 +213,12 @@ export class SearchComponent {
       for (const ep of season.episodes) {
         ep.selected = season.selected;
       }
+    }
+  }
+
+  onEpisodeToggle(season: any): void {
+    if (season.episodes) {
+      season.selected = season.episodes.every((ep: any) => ep.selected);
     }
   }
 

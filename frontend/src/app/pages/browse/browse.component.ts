@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, ChangeDetectorRef } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { Tag } from 'primeng/tag';
@@ -102,6 +102,7 @@ import { ApiService } from '../../services/api.service';
 export class BrowseComponent implements OnInit {
   private api = inject(ApiService);
   private router = inject(Router);
+  private cdr = inject(ChangeDetectorRef);
   catalog: any[] = [];
 
   ngOnInit(): void {
@@ -110,7 +111,7 @@ export class BrowseComponent implements OnInit {
 
   loadCatalog(): void {
     this.api.getCatalog().subscribe({
-      next: (res) => { this.catalog = res.catalog; }
+      next: (res) => { this.catalog = res.catalog; this.cdr.markForCheck(); }
     });
   }
 

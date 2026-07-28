@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, OnDestroy, ElementRef, ViewChild, AfterViewInit } from '@angular/core';
+import { Component, inject, OnInit, OnDestroy, ElementRef, ViewChild, AfterViewInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Button } from 'primeng/button';
@@ -54,6 +54,7 @@ export class WatchComponent implements OnInit, OnDestroy, AfterViewInit {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private api = inject(ApiService);
+  private cdr = inject(ChangeDetectorRef);
 
   title = '';
   videoSrc = '';
@@ -111,7 +112,7 @@ export class WatchComponent implements OnInit, OnDestroy, AfterViewInit {
   private loadMediaDetails(): void {
     if (this.mediaId) {
       this.api.getMedia(this.mediaId).subscribe({
-        next: (res) => { this.title = res.media.title; }
+        next: (res) => { this.title = res.media.title; this.cdr.markForCheck(); }
       });
     }
   }
@@ -119,7 +120,7 @@ export class WatchComponent implements OnInit, OnDestroy, AfterViewInit {
   private loadSubtitles(): void {
     if (this.mediaId) {
       this.api.getSubtitles(this.mediaId).subscribe({
-        next: (res) => { this.subtitles = res.subtitles; }
+        next: (res) => { this.subtitles = res.subtitles; this.cdr.markForCheck(); }
       });
     }
   }
@@ -127,7 +128,7 @@ export class WatchComponent implements OnInit, OnDestroy, AfterViewInit {
   private loadEpisodeSubtitles(): void {
     if (this.episodeId) {
       this.api.getEpisodeSubtitles(this.episodeId).subscribe({
-        next: (res) => { this.subtitles = res.subtitles; }
+        next: (res) => { this.subtitles = res.subtitles; this.cdr.markForCheck(); }
       });
     }
   }
@@ -139,6 +140,7 @@ export class WatchComponent implements OnInit, OnDestroy, AfterViewInit {
           if (res.progress && res.progress.stopped_at_seconds > 0) {
             this.startTime = res.progress.stopped_at_seconds;
           }
+          this.cdr.markForCheck();
         }
       });
     }
@@ -151,6 +153,7 @@ export class WatchComponent implements OnInit, OnDestroy, AfterViewInit {
           if (res.progress && res.progress.stopped_at_seconds > 0) {
             this.startTime = res.progress.stopped_at_seconds;
           }
+          this.cdr.markForCheck();
         }
       });
     }

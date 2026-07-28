@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { InputText } from 'primeng/inputtext';
@@ -98,6 +98,7 @@ export class UsersComponent implements OnInit {
   authStore = inject(AuthStore);
   private api = inject(ApiService);
   private messageService = inject(MessageService);
+  private cdr = inject(ChangeDetectorRef);
 
   users: any[] = [];
   showCreateDialog = false;
@@ -116,7 +117,7 @@ export class UsersComponent implements OnInit {
 
   loadUsers(): void {
     this.api.getUsers().subscribe({
-      next: (users) => { this.users = users; }
+      next: (users) => { this.users = users; this.cdr.markForCheck(); }
     });
   }
 
@@ -129,9 +130,11 @@ export class UsersComponent implements OnInit {
         this.newRole = 'user';
         this.loadUsers();
         this.messageService.add({ severity: 'success', summary: 'Created', detail: 'User created successfully' });
+        this.cdr.markForCheck();
       },
       error: (err) => {
         this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error?.error || 'Failed to create user' });
+        this.cdr.markForCheck();
       }
     });
   }
@@ -144,6 +147,7 @@ export class UsersComponent implements OnInit {
       },
       error: (err) => {
         this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error?.error || 'Failed to delete user' });
+        this.cdr.markForCheck();
       }
     });
   }
