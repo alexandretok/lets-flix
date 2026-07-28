@@ -6,7 +6,7 @@
     <mat-form-field appearance="outline" class="search-field">
       <input matInput [(ngModel)]="query" placeholder="Search movies and series..." (keydown.enter)="performSearch()" />
     </mat-form-field>
-    <button mat-flat-button color="primary" (click)="performSearch()" [disabled]="loading">
+    <button mat-fab color="primary" (click)="performSearch()" [disabled]="loading" class="search-btn">
       @if (loading) {
         <mat-spinner diameter="20"></mat-spinner>
       } @else {

@@ -6,10 +6,8 @@
   gap: 0.5rem;
   align-items: center;
 
-  button {
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  .search-btn {
+    width: 56px;
     height: 56px;
   }
 }
