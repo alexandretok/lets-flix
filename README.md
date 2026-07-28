@@ -1,5 +1,7 @@
 # LetsFlix
 
+> **Note:** This project is still under active development and is not yet ready for testing or production use.
+
 Self-hosted, multi-user streaming application designed for low-resource Linux VPS environments.
 
 ## Features
