@@ -3,9 +3,7 @@ import { resolve, dirname } from 'path';
 import { fileURLToPath } from 'url';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-// Try backend/.env first, then root .env
 dotenvConfig({ path: resolve(__dirname, '../..', '.env') });
-dotenvConfig({ path: resolve(__dirname, '../../..', '.env') });
 
 export const config = {
   port: parseInt(process.env.PORT || '3000', 10),
