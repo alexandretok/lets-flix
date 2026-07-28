@@ -46,7 +46,10 @@ export class EpisodeSelectorComponent implements OnChanges {
 
     this.api.getSeriesSeasons(this.tmdbId).subscribe({
       next: (res) => {
-        this.seasons = res.seasons.map((s: any) => ({ ...s, selected: false, episodes: null }));
+        const multiSeason = res.seasons.length > 1;
+        this.seasons = res.seasons.map((s: any) => ({
+          ...s, selected: false, indeterminate: false, collapsed: multiSeason, episodes: null
+        }));
         let pending = this.seasons.length;
 
         for (const season of this.seasons) {
@@ -72,12 +75,21 @@ export class EpisodeSelectorComponent implements OnChanges {
     });
   }
 
+  toggleCollapse(season: any): void {
+    season.collapsed = !season.collapsed;
+  }
+
   toggleSeason(season: any): void {
+    if (season.indeterminate) {
+      season.selected = true;
+      season.indeterminate = false;
+    }
     if (season.episodes) {
       for (const ep of season.episodes) {
         ep.selected = season.selected;
       }
     }
+    season.indeterminate = false;
   }
 
   onEpisodeClick(event: MouseEvent, season: any, ep: any): void {
@@ -100,8 +112,11 @@ export class EpisodeSelectorComponent implements OnChanges {
   }
 
   private updateSeasonCheckbox(season: any): void {
-    if (season.episodes) {
-      season.selected = season.episodes.length > 0 && season.episodes.every((ep: any) => ep.selected);
+    if (season.episodes && season.episodes.length > 0) {
+      const allSelected = season.episodes.every((ep: any) => ep.selected);
+      const noneSelected = season.episodes.every((ep: any) => !ep.selected);
+      season.selected = allSelected;
+      season.indeterminate = !allSelected && !noneSelected;
     }
   }
 

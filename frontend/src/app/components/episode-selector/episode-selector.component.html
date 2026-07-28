@@ -6,10 +6,13 @@
     @for (season of seasons; track season.season_number) {
       <div class="season-block">
         <div class="season-header">
-          <p-checkbox [(ngModel)]="season.selected" [binary]="true" (onChange)="toggleSeason(season)" />
-          <span>{{ season.name }} ({{ season.episode_count }} episodes)</span>
+          <p-checkbox [(ngModel)]="season.selected" [binary]="true" [indeterminate]="season.indeterminate" (onChange)="toggleSeason(season)" />
+          <span class="season-label" (click)="toggleCollapse(season)">{{ season.name }} ({{ season.episode_count }} episodes)</span>
+          @if (seasons.length > 1) {
+            <i class="pi collapse-icon" [class.pi-chevron-down]="season.collapsed" [class.pi-chevron-up]="!season.collapsed" (click)="toggleCollapse(season)"></i>
+          }
         </div>
-        @if (season.episodes) {
+        @if (season.episodes && !season.collapsed) {
           <div class="episodes-list">
             @for (ep of season.episodes; track ep.episode_number) {
               <div class="episode-item" (click)="onEpisodeClick($event, season, ep)">
