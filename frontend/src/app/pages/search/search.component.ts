@@ -33,27 +33,55 @@ import { ApiService } from '../../services/api.service';
 
       <div class="results-grid">
         @for (item of results; track item.id) {
-          <div class="result-card">
-            <div class="poster">
+          <div class="result-card" [class.expanded]="item._expanded">
+            <div class="poster" [class.poster-expanded]="item._expanded">
               @if (item.poster_url) {
-                <img [src]="item.poster_url" [alt]="item.title" />
+                <img [src]="item.poster_url" [alt]="item.title" (click)="openImagePreview(item.poster_url, $event)" />
               } @else {
                 <div class="placeholder-poster"><i class="pi pi-image"></i></div>
               }
             </div>
             <div class="result-info">
-              <h4>{{ item.title }}</h4>
-              <span class="meta">{{ item.media_type === 'tv' ? 'Series' : 'Movie' }} · {{ item.release_date | slice:0:4 }}</span>
-              <p class="overview">{{ item.overview | slice:0:100 }}{{ item.overview?.length > 100 ? '...' : '' }}</p>
-              @if (item.media_type === 'tv') {
-                <p-button label="Select Episodes" icon="pi pi-list" size="small" severity="danger" (onClick)="openSeriesDialog(item)" />
-              } @else {
-                <p-button label="Add to Catalog" icon="pi pi-plus" size="small" severity="danger" (onClick)="addMovie(item)" />
+              <div class="result-header" (click)="item._expanded = !item._expanded">
+                <div class="result-title-row">
+                  <h4>{{ item.title }}</h4>
+                  @if (item.vote_average) {
+                    <span class="rating"><i class="pi pi-star-fill"></i> {{ item.vote_average | number:'1.1-1' }}</span>
+                  }
+                </div>
+                <span class="meta">{{ item.media_type === 'tv' ? 'Series' : 'Movie' }} · {{ item.release_date | slice:0:4 }}</span>
+                <i class="pi expand-icon" [class.pi-chevron-down]="!item._expanded" [class.pi-chevron-up]="item._expanded"></i>
+              </div>
+              @if (!item._expanded) {
+                <p class="overview">{{ item.overview | slice:0:100 }}{{ item.overview?.length > 100 ? '...' : '' }}</p>
               }
+              @if (item._expanded) {
+                <p class="overview-full">{{ item.overview }}</p>
+                <div class="expanded-details">
+                  <span class="detail-item"><i class="pi pi-calendar"></i> {{ item.release_date }}</span>
+                  @if (item.vote_average) {
+                    <span class="detail-item"><i class="pi pi-star-fill"></i> {{ item.vote_average | number:'1.1-1' }} / 10</span>
+                  }
+                  <span class="detail-item"><i class="pi pi-tag"></i> {{ item.media_type === 'tv' ? 'TV Series' : 'Movie' }}</span>
+                </div>
+              }
+              <div class="result-actions">
+                @if (item.media_type === 'tv') {
+                  <p-button label="Select Episodes" icon="pi pi-list" size="small" severity="danger" (onClick)="openSeriesDialog(item)" />
+                } @else {
+                  <p-button label="Add to Catalog" icon="pi pi-plus" size="small" severity="danger" (onClick)="addMovie(item)" />
+                }
+              </div>
             </div>
           </div>
         }
       </div>
+
+      @if (previewImageUrl) {
+        <div class="image-overlay" (click)="closeImagePreview()">
+          <img [src]="previewImageUrl" class="preview-image" />
+        </div>
+      }
 
       <p-dialog header="Select Episodes" [(visible)]="showSeriesDialog" [modal]="true" [style]="{width: '500px'}" [draggable]="false">
         @if (selectedSeries) {
@@ -101,8 +129,9 @@ import { ApiService } from '../../services/api.service';
       overflow: hidden;
       padding: 1rem;
     }
-    .result-card .poster { width: 100px; flex-shrink: 0; }
-    .result-card .poster img { width: 100%; border-radius: 8px; }
+    .result-card .poster { width: 100px; flex-shrink: 0; transition: width 0.2s; }
+    .result-card .poster-expanded { width: 150px; }
+    .result-card .poster img { width: 100%; border-radius: 8px; cursor: zoom-in; }
     .placeholder-poster {
       width: 100%;
       aspect-ratio: 2/3;
@@ -115,8 +144,52 @@ import { ApiService } from '../../services/api.service';
     }
     .result-info { flex: 1; }
     .result-info h4 { margin: 0 0 0.25rem; color: #e0e0e0; }
+    .result-header { cursor: pointer; position: relative; padding-right: 1.5rem; }
+    .result-title-row { display: flex; align-items: center; gap: 0.75rem; }
+    .rating { font-size: 0.8rem; color: #f5c518; white-space: nowrap; }
+    .rating i { font-size: 0.7rem; }
+    .expand-icon {
+      position: absolute;
+      top: 0.25rem;
+      right: 0;
+      color: #ccc;
+      font-size: 1.1rem;
+      background: rgba(255,255,255,0.08);
+      border-radius: 50%;
+      width: 28px;
+      height: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.2s;
+    }
+    .result-header:hover .expand-icon { background: rgba(255,255,255,0.15); }
     .meta { font-size: 0.85rem; color: #a0a0a0; }
     .overview { font-size: 0.85rem; color: #888; margin: 0.5rem 0; }
+    .overview-full { font-size: 0.9rem; color: #bbb; margin: 0.75rem 0; line-height: 1.5; }
+    .expanded-details { display: flex; gap: 1rem; flex-wrap: wrap; margin-bottom: 0.75rem; }
+    .detail-item { font-size: 0.8rem; color: #a0a0a0; display: flex; align-items: center; gap: 0.3rem; }
+    .detail-item i { font-size: 0.75rem; }
+    .result-actions { margin-top: 0.5rem; }
+    .image-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0,0,0,0.85);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      cursor: zoom-out;
+    }
+    .preview-image {
+      max-width: 90vw;
+      max-height: 90vh;
+      border-radius: 12px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+    }
     .episodes-selector { max-height: 50vh; overflow-y: auto; }
     .season-block { margin-bottom: 1rem; }
     .season-header {
@@ -162,6 +235,7 @@ export class SearchComponent {
   showSeriesDialog = false;
   selectedSeries: any = null;
   seasons: any[] = [];
+  previewImageUrl: string | null = null;
   private lastClickedEpisode: { season: any; index: number } | null = null;
 
   performSearch(): void {
@@ -181,6 +255,15 @@ export class SearchComponent {
         this.cdr.markForCheck();
       }
     });
+  }
+
+  openImagePreview(url: string, event: Event): void {
+    event.stopPropagation();
+    this.previewImageUrl = url;
+  }
+
+  closeImagePreview(): void {
+    this.previewImageUrl = null;
   }
 
   addMovie(item: any): void {
