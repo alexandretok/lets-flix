@@ -1,0 +1,14 @@
+<div class="player-container">
+  <div class="player-header">
+    <p-button icon="pi pi-arrow-left" [text]="true" (onClick)="goBack()" label="Back" />
+    <span class="title">{{ title }}</span>
+  </div>
+  <div class="video-wrapper">
+    <video #videoPlayer controls crossorigin="anonymous" class="video-player">
+      <source [src]="videoSrc" type="video/mp4" />
+      @for (sub of subtitles; track sub.id) {
+        <track [src]="'/api/stream/subtitle/' + sub.id" [srclang]="sub.language_code" [label]="sub.language_code" kind="subtitles" />
+      }
+    </video>
+  </div>
+</div>

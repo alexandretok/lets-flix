@@ -1,0 +1,28 @@
+<div class="app-layout">
+  <nav class="sidebar">
+    <div class="sidebar-header">
+      <h2 class="logo">LetsFlix</h2>
+    </div>
+    <ul class="nav-links">
+      <li><a routerLink="/browse" routerLinkActive="active"><i class="pi pi-th-large"></i> Browse</a></li>
+      <li><a routerLink="/search" routerLinkActive="active"><i class="pi pi-search"></i> Search</a></li>
+      <li><a routerLink="/settings" routerLinkActive="active"><i class="pi pi-cog"></i> Settings</a></li>
+      @if (authStore.isAdmin()) {
+        <li><a routerLink="/users" routerLinkActive="active"><i class="pi pi-users"></i> Users</a></li>
+      }
+    </ul>
+    <div class="sidebar-footer">
+      <div class="storage-section" [class.warning]="storageWarning">
+        <span class="storage-label">Storage</span>
+        <p-progressbar [value]="storagePercent" [showValue]="true" [style]="{'height': '10px'}" />
+      </div>
+      <div class="user-section">
+        <span class="username"><i class="pi pi-user"></i> {{ authStore.user()?.username }}</span>
+        <p-button icon="pi pi-sign-out" [text]="true" severity="secondary" (onClick)="logout()" size="small" />
+      </div>
+    </div>
+  </nav>
+  <main class="main-content">
+    <ng-content />
+  </main>
+</div>

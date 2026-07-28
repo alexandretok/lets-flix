@@ -8,45 +8,8 @@ import { AuthStore } from '../../stores/auth.store';
 @Component({
   selector: 'app-watch',
   imports: [CommonModule, Button],
-  template: `
-    <div class="player-container">
-      <div class="player-header">
-        <p-button icon="pi pi-arrow-left" [text]="true" (onClick)="goBack()" label="Back" />
-        <span class="title">{{ title }}</span>
-      </div>
-      <div class="video-wrapper">
-        <video #videoPlayer controls crossorigin="anonymous" class="video-player">
-          <source [src]="videoSrc" type="video/mp4" />
-          @for (sub of subtitles; track sub.id) {
-            <track [src]="'/api/stream/subtitle/' + sub.id" [srclang]="sub.language_code" [label]="sub.language_code" kind="subtitles" />
-          }
-        </video>
-      </div>
-    </div>
-  `,
-  styles: [`
-    .player-container {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: #000;
-      display: flex;
-      flex-direction: column;
-      z-index: 1000;
-    }
-    .player-header {
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-      padding: 0.75rem 1rem;
-      background: rgba(0,0,0,0.8);
-    }
-    .title { color: #e0e0e0; font-size: 1.1rem; }
-    .video-wrapper { flex: 1; display: flex; align-items: center; justify-content: center; }
-    .video-player { width: 100%; height: 100%; max-height: calc(100vh - 60px); }
-  `]
+  templateUrl: './watch.component.html',
+  styleUrl: './watch.component.scss',
 })
 export class WatchComponent implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild('videoPlayer') videoRef!: ElementRef<HTMLVideoElement>;
@@ -91,7 +54,6 @@ export class WatchComponent implements OnInit, OnDestroy, AfterViewInit {
       }
     });
 
-    // Progress heartbeat every 10 seconds
     this.progressInterval = setInterval(() => {
       if (video && !video.paused && video.currentTime > 0) {
         this.saveProgress(video.currentTime);

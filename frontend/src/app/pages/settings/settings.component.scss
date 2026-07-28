@@ -1,0 +1,23 @@
+.settings-container { max-width: 600px; }
+.settings-container h1 { color: #e0e0e0; margin-bottom: 2rem; }
+.settings-section {
+  margin-bottom: 2rem;
+  padding: 1.5rem;
+  background: rgba(255,255,255,0.05);
+  border-radius: 12px;
+}
+.settings-section h3 { color: #e0e0e0; margin: 0 0 1rem; }
+.field { margin-bottom: 1rem; }
+.field label {
+  display: block;
+  margin-bottom: 0.5rem;
+  color: #ccc;
+  font-size: 0.9rem;
+}
+.toggle-field {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.toggle-field label { margin-bottom: 0; }
+.actions { margin-top: 1.5rem; }

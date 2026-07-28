@@ -1,0 +1,20 @@
+<p-toast />
+<div class="login-container">
+  <div class="login-card">
+    <div class="logo-section">
+      <h1 class="logo-text">LetsFlix</h1>
+      <p class="subtitle">Your personal streaming platform</p>
+    </div>
+    <div class="form-section">
+      <div class="field">
+        <label for="username">Username</label>
+        <input pInputText id="username" [(ngModel)]="username" placeholder="Enter username" class="w-full" />
+      </div>
+      <div class="field">
+        <label for="password">Password</label>
+        <p-password id="password" [(ngModel)]="password" [feedback]="false" placeholder="Enter password" styleClass="w-full" [toggleMask]="true" (keydown.enter)="onLogin()" />
+      </div>
+      <p-button label="Sign In" (onClick)="onLogin()" [loading]="authStore.loading()" styleClass="w-full" severity="danger" />
+    </div>
+  </div>
+</div>

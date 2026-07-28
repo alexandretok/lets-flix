@@ -8,72 +8,14 @@ import { Toast } from 'primeng/toast';
 import { MessageService } from 'primeng/api';
 import { LayoutComponent } from '../../layout/layout.component';
 import { ApiService } from '../../services/api.service';
+import { getLanguageOptions } from '../../shared/languages';
 
 @Component({
   selector: 'app-settings',
   imports: [CommonModule, FormsModule, MultiSelect, ToggleSwitch, Button, Toast, LayoutComponent],
   providers: [MessageService],
-  template: `
-    <app-layout>
-      <p-toast />
-      <div class="settings-container">
-        <h1>Settings</h1>
-
-        <div class="settings-section">
-          <h3>Subtitles</h3>
-          <div class="field">
-            <label>Preferred Languages</label>
-            <p-multiselect [options]="languageOptions" [(ngModel)]="subtitleLanguages" optionLabel="label" optionValue="value" placeholder="Select languages" [style]="{width: '100%'}" />
-          </div>
-        </div>
-
-        <div class="settings-section">
-          <h3>Downloads</h3>
-          <div class="field">
-            <label>Allowed Resolutions</label>
-            <p-multiselect [options]="resolutionOptions" [(ngModel)]="allowedResolutions" optionLabel="label" optionValue="value" placeholder="Select resolutions" [style]="{width: '100%'}" />
-          </div>
-        </div>
-
-        <div class="settings-section">
-          <h3>Storage</h3>
-          <div class="field toggle-field">
-            <label>Auto-delete files after watching</label>
-            <p-toggleswitch [(ngModel)]="autoDeleteWatched" />
-          </div>
-        </div>
-
-        <div class="actions">
-          <p-button label="Save Settings" icon="pi pi-check" severity="danger" (onClick)="save()" [loading]="saving" />
-        </div>
-      </div>
-    </app-layout>
-  `,
-  styles: [`
-    .settings-container { max-width: 600px; }
-    .settings-container h1 { color: #e0e0e0; margin-bottom: 2rem; }
-    .settings-section {
-      margin-bottom: 2rem;
-      padding: 1.5rem;
-      background: rgba(255,255,255,0.05);
-      border-radius: 12px;
-    }
-    .settings-section h3 { color: #e0e0e0; margin: 0 0 1rem; }
-    .field { margin-bottom: 1rem; }
-    .field label {
-      display: block;
-      margin-bottom: 0.5rem;
-      color: #ccc;
-      font-size: 0.9rem;
-    }
-    .toggle-field {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-    .toggle-field label { margin-bottom: 0; }
-    .actions { margin-top: 1.5rem; }
-  `]
+  templateUrl: './settings.component.html',
+  styleUrl: './settings.component.scss',
 })
 export class SettingsComponent implements OnInit {
   private api = inject(ApiService);
@@ -85,16 +27,7 @@ export class SettingsComponent implements OnInit {
   autoDeleteWatched = false;
   saving = false;
 
-  languageOptions = [
-    { label: 'English', value: 'en' },
-    { label: 'Portuguese', value: 'pt' },
-    { label: 'Spanish', value: 'es' },
-    { label: 'French', value: 'fr' },
-    { label: 'German', value: 'de' },
-    { label: 'Italian', value: 'it' },
-    { label: 'Japanese', value: 'ja' },
-    { label: 'Korean', value: 'ko' },
-  ];
+  languageOptions = getLanguageOptions();
 
   resolutionOptions = [
     { label: '720p', value: '720p' },

@@ -16,83 +16,8 @@ import { AuthStore } from '../../stores/auth.store';
   selector: 'app-users',
   imports: [CommonModule, FormsModule, InputText, Button, Select, Toast, TableModule, Dialog, LayoutComponent],
   providers: [MessageService],
-  template: `
-    <app-layout>
-      <p-toast />
-      <div class="users-container">
-        <div class="users-header">
-          <h1>User Management</h1>
-          <p-button label="Create User" icon="pi pi-user-plus" severity="danger" (onClick)="showCreateDialog = true" />
-        </div>
-
-        <p-table [value]="users" [tableStyle]="{'min-width': '50rem'}">
-          <ng-template #header>
-            <tr>
-              <th>Username</th>
-              <th>Role</th>
-              <th>Password Change Required</th>
-              <th>Actions</th>
-            </tr>
-          </ng-template>
-          <ng-template #body let-user>
-            <tr>
-              <td>{{ user.username }}</td>
-              <td><span class="role-badge" [class.admin]="user.role === 'admin'">{{ user.role }}</span></td>
-              <td>{{ user.requires_password_change ? 'Yes' : 'No' }}</td>
-              <td>
-                @if (user.id !== authStore.user()?.id) {
-                  <p-button icon="pi pi-trash" [text]="true" severity="danger" (onClick)="deleteUser(user)" />
-                }
-              </td>
-            </tr>
-          </ng-template>
-        </p-table>
-      </div>
-
-      <p-dialog header="Create User" [(visible)]="showCreateDialog" [modal]="true" [style]="{width: '400px'}">
-        <div class="create-form">
-          <div class="field">
-            <label>Username</label>
-            <input pInputText [(ngModel)]="newUsername" class="w-full" />
-          </div>
-          <div class="field">
-            <label>Password</label>
-            <input pInputText [(ngModel)]="newPassword" type="password" class="w-full" />
-          </div>
-          <div class="field">
-            <label>Role</label>
-            <p-select [options]="roleOptions" [(ngModel)]="newRole" optionLabel="label" optionValue="value" [style]="{width: '100%'}" />
-          </div>
-          <p-button label="Create" icon="pi pi-check" severity="danger" (onClick)="createUser()" [disabled]="!newUsername || !newPassword" styleClass="w-full" />
-        </div>
-      </p-dialog>
-    </app-layout>
-  `,
-  styles: [`
-    .users-container { max-width: 800px; }
-    .users-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 2rem;
-    }
-    .users-header h1 { color: #e0e0e0; margin: 0; }
-    .role-badge {
-      padding: 0.25rem 0.75rem;
-      border-radius: 20px;
-      font-size: 0.8rem;
-      background: rgba(255,255,255,0.1);
-      color: #ccc;
-    }
-    .role-badge.admin { background: rgba(233,69,96,0.2); color: #e94560; }
-    .create-form .field { margin-bottom: 1rem; }
-    .create-form .field label {
-      display: block;
-      margin-bottom: 0.5rem;
-      color: #ccc;
-    }
-    .w-full { width: 100%; }
-  `]
+  templateUrl: './users.component.html',
+  styleUrl: './users.component.scss',
 })
 export class UsersComponent implements OnInit {
   authStore = inject(AuthStore);

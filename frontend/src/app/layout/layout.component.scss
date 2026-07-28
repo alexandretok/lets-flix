@@ -1,0 +1,47 @@
+.app-layout { display: flex; min-height: 100vh; }
+.sidebar {
+  width: 240px;
+  background: #16213e;
+  border-right: 1px solid rgba(255,255,255,0.1);
+  display: flex;
+  flex-direction: column;
+  padding: 1.5rem 1rem;
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  z-index: 100;
+}
+.sidebar-header { margin-bottom: 2rem; }
+.logo { color: #e94560; margin: 0; font-size: 1.8rem; }
+.nav-links { list-style: none; padding: 0; margin: 0; flex: 1; }
+.nav-links li { margin-bottom: 0.5rem; }
+.nav-links a {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  color: #a0a0a0;
+  text-decoration: none;
+  transition: all 0.2s;
+}
+.nav-links a:hover { background: rgba(255,255,255,0.05); color: #e0e0e0; }
+.nav-links a.active { background: rgba(233,69,96,0.15); color: #e94560; }
+.sidebar-footer { margin-top: auto; }
+.storage-section {
+  padding: 0.75rem;
+  border-radius: 8px;
+  background: rgba(255,255,255,0.03);
+  margin-bottom: 1rem;
+}
+.storage-section.warning { background: rgba(255,0,0,0.1); }
+.storage-label { font-size: 0.8rem; color: #a0a0a0; display: block; margin-bottom: 0.5rem; }
+.user-section {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.5rem;
+}
+.username { color: #e0e0e0; font-size: 0.9rem; }
+.main-content { flex: 1; margin-left: 240px; padding: 2rem; min-height: 100vh; }

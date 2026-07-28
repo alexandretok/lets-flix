@@ -1,0 +1,34 @@
+<app-layout>
+  <p-toast />
+  <div class="settings-container">
+    <h1>Settings</h1>
+
+    <div class="settings-section">
+      <h3>Subtitles</h3>
+      <div class="field">
+        <label>Preferred Languages</label>
+        <p-multiselect [options]="languageOptions" [(ngModel)]="subtitleLanguages" optionLabel="label" optionValue="value" placeholder="Select languages" [style]="{width: '100%'}" />
+      </div>
+    </div>
+
+    <div class="settings-section">
+      <h3>Downloads</h3>
+      <div class="field">
+        <label>Allowed Resolutions</label>
+        <p-multiselect [options]="resolutionOptions" [(ngModel)]="allowedResolutions" optionLabel="label" optionValue="value" placeholder="Select resolutions" [style]="{width: '100%'}" />
+      </div>
+    </div>
+
+    <div class="settings-section">
+      <h3>Storage</h3>
+      <div class="field toggle-field">
+        <label>Auto-delete files after watching</label>
+        <p-toggleswitch [(ngModel)]="autoDeleteWatched" />
+      </div>
+    </div>
+
+    <div class="actions">
+      <p-button label="Save Settings" icon="pi pi-check" severity="danger" (onClick)="save()" [loading]="saving" />
+    </div>
+  </div>
+</app-layout>

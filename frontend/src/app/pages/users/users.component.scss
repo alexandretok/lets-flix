@@ -1,0 +1,23 @@
+.users-container { max-width: 800px; }
+.users-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+.users-header h1 { color: #e0e0e0; margin: 0; }
+.role-badge {
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  background: rgba(255,255,255,0.1);
+  color: #ccc;
+}
+.role-badge.admin { background: rgba(233,69,96,0.2); color: #e94560; }
+.create-form .field { margin-bottom: 1rem; }
+.create-form .field label {
+  display: block;
+  margin-bottom: 0.5rem;
+  color: #ccc;
+}
+.w-full { width: 100%; }
