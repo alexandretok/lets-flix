@@ -1,5 +1,4 @@
 import { config } from '../config/env.js';
-import { getMockTorrentResults } from '../mocks/indexer.mock.js';
 import { settingsRepository } from '../repositories/settings.repository.js';
 
 export interface TorrentResult {
@@ -14,17 +13,6 @@ export const indexerService = {
   async searchTorrents(title: string, year?: string, type?: string): Promise<TorrentResult[]> {
     const resolutions = settingsRepository.getJson<string[]>('allowed_resolutions') || ['720p', '1080p'];
     const codecFilter = ['x264', 'H.264', 'h264', 'mp4'];
-
-    if (config.useMocks) {
-      const results = getMockTorrentResults(title);
-      return results
-        .filter(r => {
-          const hasCodec = codecFilter.some(c => r.title.toLowerCase().includes(c.toLowerCase()));
-          const hasResolution = resolutions.some(res => r.title.includes(res));
-          return hasCodec && hasResolution;
-        })
-        .sort((a, b) => b.seeders - a.seeders);
-    }
 
     const searchQuery = buildSearchQuery(title, year, resolutions);
 

@@ -1,7 +1,6 @@
 import fs from 'fs';
 import path from 'path';
 import { config } from '../config/env.js';
-import { getMockSubtitleResults, getMockSrtContent } from '../mocks/subtitles.mock.js';
 import { convertSrtToVtt } from '../utils/srt-to-vtt.js';
 import { subtitlesRepository } from '../repositories/subtitles.repository.js';
 import { mediaRepository } from '../repositories/media.repository.js';
@@ -18,17 +17,6 @@ export interface SubtitleSearchResult {
 
 export const subtitlesService = {
   async searchSubtitles(tmdbId: number, language: string, type: string, season?: number, episode?: number): Promise<SubtitleSearchResult[]> {
-    if (config.useMocks) {
-      const results = getMockSubtitleResults(language);
-      return results.map(r => ({
-        id: r.id,
-        language: r.attributes.language,
-        release: r.attributes.release,
-        fileId: r.attributes.files[0].file_id,
-        fileName: r.attributes.files[0].file_name,
-      }));
-    }
-
     try {
       let url = `https://api.opensubtitles.com/api/v1/subtitles?tmdb_id=${tmdbId}&languages=${language}&type=${type === 'movie' ? 'movie' : 'episode'}`;
       if (season) url += `&season_number=${season}`;
@@ -80,26 +68,22 @@ export const subtitlesService = {
 
     let srtContent: string;
 
-    if (config.useMocks) {
-      srtContent = getMockSrtContent();
-    } else {
-      try {
-        const res = await fetch('https://api.opensubtitles.com/api/v1/download', {
-          method: 'POST',
-          headers: {
-            'Api-Key': config.opensubtitlesApiKey,
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ file_id: fileId }),
-        });
-        const data = await res.json() as any;
+    try {
+      const res = await fetch('https://api.opensubtitles.com/api/v1/download', {
+        method: 'POST',
+        headers: {
+          'Api-Key': config.opensubtitlesApiKey,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ file_id: fileId }),
+      });
+      const data = await res.json() as any;
 
-        const fileRes = await fetch(data.link);
-        srtContent = await fileRes.text();
-      } catch (error) {
-        console.error('Subtitle download failed:', error);
-        return { success: false, message: 'Failed to download subtitle' };
-      }
+      const fileRes = await fetch(data.link);
+      srtContent = await fileRes.text();
+    } catch (error) {
+      console.error('Subtitle download failed:', error);
+      return { success: false, message: 'Failed to download subtitle' };
     }
 
     const vttContent = convertSrtToVtt(srtContent);

@@ -61,7 +61,6 @@ Edit `backend/.env` with your actual values:
 | `OPENSUBTITLES_API_KEY` | Your OpenSubtitles API key (see below) |
 | `INDEXER_URL` | URL of your Jackett/Prowlarr instance (default: `http://localhost:9117`) |
 | `INDEXER_API_KEY` | API key for your Jackett/Prowlarr instance |
-| `USE_MOCKS` | Set to `true` to use mock data instead of real API calls (useful for development) |
 
 ### Obtaining API Keys
 
@@ -106,8 +105,6 @@ npm run dev
 npm run backend:dev
 npm run frontend:dev
 ```
-
-Set `USE_MOCKS=true` in your `.env` to develop without real API keys. Mock responses simulate TMDB search results, subtitle fetching, and torrent downloads.
 
 ### Default Login
 

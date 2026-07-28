@@ -20,7 +20,6 @@ vi.mock('../src/config/env.js', () => ({
     opensubtitlesApiKey: 'mock_key',
     indexerUrl: 'http://localhost:9117',
     indexerApiKey: 'mock_key',
-    useMocks: true,
   },
 }));
 

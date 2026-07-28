@@ -14,5 +14,4 @@ export const config = {
   opensubtitlesApiKey: process.env.OPENSUBTITLES_API_KEY || '',
   indexerUrl: process.env.INDEXER_URL || 'http://localhost:9117',
   indexerApiKey: process.env.INDEXER_API_KEY || '',
-  useMocks: process.env.USE_MOCKS === 'true',
 };

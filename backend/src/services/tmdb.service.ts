@@ -1,5 +1,4 @@
 import { config } from '../config/env.js';
-import { mockSearchResults, mockMovieDetails, mockSeriesDetails, mockSeasonDetails, mockTrendingMovies, mockTrendingTv } from '../mocks/tmdb.mock.js';
 
 const TMDB_BASE_URL = 'https://api.themoviedb.org/3';
 const TMDB_IMAGE_BASE = 'https://image.tmdb.org/t/p/w500';
@@ -47,20 +46,6 @@ function posterUrl(path: string | null): string | null {
 
 export const tmdbService = {
   async searchMulti(query: string): Promise<TmdbSearchResult[]> {
-    if (config.useMocks) {
-      return mockSearchResults.results
-        .filter(r => r.title?.toLowerCase().includes(query.toLowerCase()) || r.name?.toLowerCase().includes(query.toLowerCase()))
-        .map(r => ({
-          id: r.id,
-          media_type: r.media_type as 'movie' | 'tv',
-          title: (r as any).title || (r as any).name,
-          overview: r.overview,
-          poster_url: posterUrl(r.poster_path),
-          release_date: (r as any).release_date || (r as any).first_air_date,
-          vote_average: r.vote_average,
-        }));
-    }
-
     const res = await fetch(
       `${TMDB_BASE_URL}/search/multi?api_key=${config.tmdbApiKey}&query=${encodeURIComponent(query)}`
     );
@@ -79,19 +64,6 @@ export const tmdbService = {
   },
 
   async getMovieDetails(tmdbId: number): Promise<TmdbMovieDetails> {
-    if (config.useMocks) {
-      const mock = { ...mockMovieDetails, id: tmdbId };
-      return {
-        id: mock.id,
-        title: mock.title,
-        overview: mock.overview,
-        poster_url: posterUrl(mock.poster_path),
-        release_date: mock.release_date,
-        runtime: mock.runtime,
-        vote_average: mock.vote_average,
-      };
-    }
-
     const res = await fetch(
       `${TMDB_BASE_URL}/movie/${tmdbId}?api_key=${config.tmdbApiKey}`
     );
@@ -108,20 +80,6 @@ export const tmdbService = {
   },
 
   async getSeriesDetails(tmdbId: number): Promise<TmdbSeriesDetails> {
-    if (config.useMocks) {
-      const mock = { ...mockSeriesDetails, id: tmdbId };
-      return {
-        id: mock.id,
-        name: mock.name,
-        overview: mock.overview,
-        poster_url: posterUrl(mock.poster_path),
-        first_air_date: mock.first_air_date,
-        vote_average: mock.vote_average,
-        number_of_seasons: mock.number_of_seasons,
-        seasons: mock.seasons,
-      };
-    }
-
     const res = await fetch(
       `${TMDB_BASE_URL}/tv/${tmdbId}?api_key=${config.tmdbApiKey}`
     );
@@ -139,11 +97,6 @@ export const tmdbService = {
   },
 
   async getSeasonDetails(tmdbId: number, seasonNumber: number): Promise<TmdbEpisode[]> {
-    if (config.useMocks) {
-      const season = mockSeasonDetails[seasonNumber];
-      return season ? season.episodes : [];
-    }
-
     const res = await fetch(
       `${TMDB_BASE_URL}/tv/${tmdbId}/season/${seasonNumber}?api_key=${config.tmdbApiKey}`
     );
@@ -156,18 +109,6 @@ export const tmdbService = {
   },
 
   async getTrendingMovies(): Promise<TmdbSearchResult[]> {
-    if (config.useMocks) {
-      return mockTrendingMovies.results.map(r => ({
-        id: r.id,
-        media_type: 'movie' as const,
-        title: r.title,
-        overview: r.overview,
-        poster_url: posterUrl(r.poster_path),
-        release_date: r.release_date,
-        vote_average: r.vote_average,
-      }));
-    }
-
     const res = await fetch(
       `${TMDB_BASE_URL}/trending/movie/week?api_key=${config.tmdbApiKey}`
     );
@@ -184,18 +125,6 @@ export const tmdbService = {
   },
 
   async getTrendingTv(): Promise<TmdbSearchResult[]> {
-    if (config.useMocks) {
-      return mockTrendingTv.results.map(r => ({
-        id: r.id,
-        media_type: 'tv' as const,
-        title: r.name,
-        overview: r.overview,
-        poster_url: posterUrl(r.poster_path),
-        release_date: r.first_air_date,
-        vote_average: r.vote_average,
-      }));
-    }
-
     const res = await fetch(
       `${TMDB_BASE_URL}/trending/tv/week?api_key=${config.tmdbApiKey}`
     );
@@ -207,18 +136,6 @@ export const tmdbService = {
       overview: r.overview,
       poster_url: posterUrl(r.poster_path),
       release_date: r.first_air_date,
-      vote_average: r.vote_average,
-    }));
-  },
-
-  getAllMockResults(): TmdbSearchResult[] {
-    return mockSearchResults.results.map(r => ({
-      id: r.id,
-      media_type: r.media_type as 'movie' | 'tv',
-      title: (r as any).title || (r as any).name,
-      overview: r.overview,
-      poster_url: posterUrl(r.poster_path),
-      release_date: (r as any).release_date || (r as any).first_air_date,
       vote_average: r.vote_average,
     }));
   },
