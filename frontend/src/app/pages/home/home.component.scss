@@ -6,7 +6,6 @@
 
 .home-container {
   width: 100%;
-  max-width: 1200px;
 }
 
 .welcome-section {
@@ -81,12 +80,13 @@
 .carousel {
   display: flex;
   gap: 1rem;
-  width: max-content;
+  width: 100%;
+  flex-wrap: nowrap;
 }
 
 .media-card {
-  flex-shrink: 0;
-  width: 160px;
+  flex: 1 0 0;
+  min-width: 130px;
   background: rgba(255, 255, 255, 0.05);
   border-radius: 12px;
   overflow: hidden;
