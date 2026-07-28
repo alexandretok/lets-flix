@@ -67,8 +67,8 @@ import { ApiService } from '../../services/api.service';
                 @if (season.episodes) {
                   <div class="episodes-list">
                     @for (ep of season.episodes; track ep.episode_number) {
-                      <div class="episode-item">
-                        <p-checkbox [(ngModel)]="ep.selected" [binary]="true" (onChange)="onEpisodeToggle(season)" />
+                      <div class="episode-item" (click)="onEpisodeClick($event, season, ep)">
+                        <p-checkbox [ngModel]="ep.selected" [binary]="true" class="no-pointer" />
                         <span>E{{ ep.episode_number }} - {{ ep.name }}</span>
                       </div>
                     }
@@ -127,7 +127,7 @@ import { ApiService } from '../../services/api.service';
       color: #e0e0e0;
       margin-bottom: 0.5rem;
     }
-    .episodes-list { padding-left: 1.5rem; }
+    .episodes-list { padding-left: 1.5rem; user-select: none; }
     .episode-item {
       display: flex;
       align-items: center;
@@ -135,7 +135,11 @@ import { ApiService } from '../../services/api.service';
       padding: 0.25rem 0;
       color: #ccc;
       font-size: 0.9rem;
+      cursor: pointer;
+      border-radius: 4px;
     }
+    .episode-item:hover { background: rgba(255,255,255,0.05); }
+    .no-pointer { pointer-events: none; }
     .dialog-footer {
       margin-top: 1rem;
       text-align: right;
@@ -158,6 +162,7 @@ export class SearchComponent {
   showSeriesDialog = false;
   selectedSeries: any = null;
   seasons: any[] = [];
+  private lastClickedEpisode: { season: any; index: number } | null = null;
 
   performSearch(): void {
     if (!this.query || this.query.trim().length < 2) {
@@ -214,6 +219,25 @@ export class SearchComponent {
         ep.selected = season.selected;
       }
     }
+  }
+
+  onEpisodeClick(event: MouseEvent, season: any, ep: any): void {
+    if (event.shiftKey && this.lastClickedEpisode && this.lastClickedEpisode.season === season) {
+      const episodes = season.episodes;
+      const currentIndex = episodes.indexOf(ep);
+      const lastIndex = this.lastClickedEpisode.index;
+      const start = Math.min(currentIndex, lastIndex);
+      const end = Math.max(currentIndex, lastIndex);
+      const value = !ep.selected;
+      for (let i = start; i <= end; i++) {
+        episodes[i].selected = value;
+      }
+      this.onEpisodeToggle(season);
+    } else {
+      ep.selected = !ep.selected;
+      this.onEpisodeToggle(season);
+    }
+    this.lastClickedEpisode = { season, index: season.episodes.indexOf(ep) };
   }
 
   onEpisodeToggle(season: any): void {
