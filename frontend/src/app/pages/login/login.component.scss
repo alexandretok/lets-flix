@@ -28,13 +28,19 @@
   color: #a0a0a0;
   margin-top: 0.5rem;
 }
-.field {
-  margin-bottom: 1.5rem;
+.form-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
 }
-.field label {
-  display: block;
-  margin-bottom: 0.5rem;
-  color: #e0e0e0;
-  font-size: 0.9rem;
+.login-btn {
+  height: 48px;
+  font-size: 1rem;
+  margin-top: 0.5rem;
 }
-.w-full { width: 100%; }
+.spinning {
+  animation: spin 1s linear infinite;
+}
+@keyframes spin {
+  100% { transform: rotate(360deg); }
+}

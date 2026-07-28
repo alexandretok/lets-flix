@@ -1,24 +1,24 @@
 import { Component, inject, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { MultiSelect } from 'primeng/multiselect';
-import { ToggleSwitch } from 'primeng/toggleswitch';
-import { Button } from 'primeng/button';
-import { Toast } from 'primeng/toast';
-import { MessageService } from 'primeng/api';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatSelectModule } from '@angular/material/select';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
 import { ApiService } from '../../services/api.service';
+import { NotificationService } from '../../services/notification.service';
 import { getLanguageOptions } from '../../shared/languages';
 
 @Component({
   selector: 'app-settings',
-  imports: [CommonModule, FormsModule, MultiSelect, ToggleSwitch, Button, Toast],
-  providers: [MessageService],
+  imports: [CommonModule, FormsModule, MatFormFieldModule, MatSelectModule, MatSlideToggleModule, MatButtonModule, MatIconModule],
   templateUrl: './settings.component.html',
   styleUrl: './settings.component.scss',
 })
 export class SettingsComponent implements OnInit {
   private api = inject(ApiService);
-  private messageService = inject(MessageService);
+  private notify = inject(NotificationService);
   private cdr = inject(ChangeDetectorRef);
 
   subtitleLanguages: string[] = [];
@@ -57,12 +57,12 @@ export class SettingsComponent implements OnInit {
     this.api.updateSettings(settings).subscribe({
       next: () => {
         this.saving = false;
-        this.messageService.add({ severity: 'success', summary: 'Saved', detail: 'Settings updated successfully' });
+        this.notify.success('Settings updated successfully');
         this.cdr.markForCheck();
       },
       error: () => {
         this.saving = false;
-        this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Failed to save settings' });
+        this.notify.error('Failed to save settings');
         this.cdr.markForCheck();
       }
     });

@@ -62,7 +62,7 @@ describe('LoginComponent', () => {
     });
 
     expect(store.isAuthenticated()).toBe(true);
-    expect(router.navigate).toHaveBeenCalledWith(['/browse']);
+    expect(router.navigate).toHaveBeenCalledWith(['/home']);
   });
 
   it('should navigate to /setup-password if password change required', () => {

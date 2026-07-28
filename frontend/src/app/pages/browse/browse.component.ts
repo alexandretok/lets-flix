@@ -1,13 +1,13 @@
 import { Component, inject, OnInit, ChangeDetectorRef } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { Tag } from 'primeng/tag';
-import { Button } from 'primeng/button';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
 import { ApiService } from '../../services/api.service';
 
 @Component({
   selector: 'app-browse',
-  imports: [CommonModule, RouterLink, Tag, Button],
+  imports: [CommonModule, RouterLink, MatButtonModule, MatIconModule],
   templateUrl: './browse.component.html',
   styleUrl: './browse.component.scss',
 })
@@ -42,14 +42,14 @@ export class BrowseComponent implements OnInit {
     return map[status] || status;
   }
 
-  getStatusSeverity(status: string): 'success' | 'info' | 'warn' | 'danger' | 'secondary' {
-    const map: Record<string, any> = {
-      downloaded: 'success',
-      downloading: 'info',
-      pending: 'warn',
-      searching: 'info',
-      not_found: 'danger',
+  getStatusClass(status: string): string {
+    const map: Record<string, string> = {
+      downloaded: 'tag-success',
+      downloading: 'tag-info',
+      pending: 'tag-warn',
+      searching: 'tag-info',
+      not_found: 'tag-danger',
     };
-    return map[status] || 'secondary';
+    return map[status] || 'tag-secondary';
   }
 }

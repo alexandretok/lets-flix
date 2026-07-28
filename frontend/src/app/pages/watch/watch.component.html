@@ -1,6 +1,8 @@
 <div class="player-container">
   <div class="player-header">
-    <p-button icon="pi pi-arrow-left" [text]="true" (onClick)="goBack()" label="Back" />
+    <button mat-button (click)="goBack()">
+      <mat-icon>arrow_back</mat-icon> Back
+    </button>
     <span class="title">{{ title }}</span>
   </div>
   <div class="video-wrapper">

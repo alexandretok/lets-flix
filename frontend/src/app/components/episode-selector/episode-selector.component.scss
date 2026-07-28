@@ -1,46 +1,80 @@
-.loading-spinner { text-align: center; padding: 1rem; color: #a0a0a0; }
-.episodes-selector { max-height: 50vh; overflow-y: auto; }
-.season-block { margin-bottom: 1rem; }
+.dialog-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+.dialog-panel {
+  background: #1e1e2e;
+  border-radius: 12px;
+  width: 500px;
+  max-width: 90vw;
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+.dialog-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  h2 { margin: 0; font-size: 1.2rem; color: #e0e0e0; }
+}
+.dialog-content {
+  padding: 1rem 1.5rem;
+  overflow-y: auto;
+  flex: 1;
+}
+.dialog-footer {
+  padding: 1rem 1.5rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  justify-content: flex-end;
+}
+.loading-spinner {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem 0;
+  color: #aaa;
+}
+.season-block {
+  margin-bottom: 0.75rem;
+}
 .season-header {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  font-weight: bold;
-  color: #e0e0e0;
-  margin-bottom: 0.5rem;
+  padding: 0.5rem 0;
 }
 .season-label {
-  flex: 1;
   cursor: pointer;
-  user-select: none;
+  font-weight: 500;
+  color: #e0e0e0;
 }
 .collapse-icon {
   cursor: pointer;
-  font-size: 0.85rem;
-  color: #888;
-  padding: 0.25rem;
-  transition: color 0.15s;
-  &:hover { color: #e0e0e0; }
+  color: #aaa;
+  margin-left: auto;
 }
-.episodes-list { padding-left: 1.5rem; user-select: none; }
+.episodes-list {
+  padding-left: 2rem;
+}
 .episode-item {
   display: flex;
   align-items: center;
   gap: 0.5rem;
   padding: 0.25rem 0;
-  color: #ccc;
-  font-size: 0.9rem;
   cursor: pointer;
-  border-radius: 4px;
+  user-select: none;
+  color: #ccc;
+  &:hover { background: rgba(255, 255, 255, 0.03); }
 }
-.episode-item:hover { background: rgba(255,255,255,0.05); }
-.no-pointer { pointer-events: none; }
-.dialog-footer {
-  margin-top: 1rem;
-  text-align: right;
-  position: sticky;
-  bottom: 0;
-  background: var(--p-dialog-background, #1e1e2e);
-  padding: 0.75rem 0 0;
-  border-top: 1px solid rgba(255,255,255,0.1);
+.no-pointer {
+  pointer-events: none;
 }

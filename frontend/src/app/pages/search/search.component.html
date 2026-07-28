@@ -1,16 +1,23 @@
-<p-toast />
 <div class="search-header">
   <h1>Search</h1>
 </div>
 <div class="search-input-wrapper">
   <div class="search-bar">
-    <input pInputText [(ngModel)]="query" placeholder="Search movies and series..." class="search-input" (keydown.enter)="performSearch()" />
-    <p-button icon="pi pi-search" severity="danger" (onClick)="performSearch()" [loading]="loading" />
+    <mat-form-field appearance="outline" class="search-field">
+      <input matInput [(ngModel)]="query" placeholder="Search movies and series..." (keydown.enter)="performSearch()" />
+    </mat-form-field>
+    <button mat-flat-button color="primary" (click)="performSearch()" [disabled]="loading">
+      @if (loading) {
+        <mat-spinner diameter="20"></mat-spinner>
+      } @else {
+        <mat-icon>search</mat-icon>
+      }
+    </button>
   </div>
 </div>
 
 @if (loading) {
-  <div class="loading"><i class="pi pi-spin pi-spinner" style="font-size: 2rem;"></i></div>
+  <div class="loading"><mat-spinner diameter="40"></mat-spinner></div>
 }
 
 <div class="results-grid">
@@ -20,7 +27,7 @@
         @if (item.poster_url) {
           <img [src]="item.poster_url" [alt]="item.title" (click)="openImagePreview(item.poster_url, $event)" />
         } @else {
-          <div class="placeholder-poster"><i class="pi pi-image"></i></div>
+          <div class="placeholder-poster"><mat-icon>image</mat-icon></div>
         }
       </div>
       <div class="result-info">
@@ -28,11 +35,11 @@
           <div class="result-title-row">
             <h4>{{ item.title }}</h4>
             @if (item.vote_average) {
-              <span class="rating"><i class="pi pi-star-fill"></i> {{ item.vote_average | number:'1.1-1' }}</span>
+              <span class="rating"><mat-icon class="star-icon">star</mat-icon> {{ item.vote_average | number:'1.1-1' }}</span>
             }
           </div>
           <span class="meta">{{ item.media_type === 'tv' ? 'Series' : 'Movie' }} · {{ item.release_date | slice:0:4 }}</span>
-          <i class="pi expand-icon" [class.pi-chevron-down]="!item._expanded" [class.pi-chevron-up]="item._expanded"></i>
+          <mat-icon class="expand-icon">{{ item._expanded ? 'expand_less' : 'expand_more' }}</mat-icon>
         </div>
         @if (!item._expanded) {
           <p class="overview">{{ item.overview | slice:0:100 }}{{ item.overview?.length > 100 ? '...' : '' }}</p>
@@ -40,18 +47,22 @@
         @if (item._expanded) {
           <p class="overview-full">{{ item.overview }}</p>
           <div class="expanded-details">
-            <span class="detail-item"><i class="pi pi-calendar"></i> {{ item.release_date }}</span>
+            <span class="detail-item"><mat-icon>calendar_today</mat-icon> {{ item.release_date }}</span>
             @if (item.vote_average) {
-              <span class="detail-item"><i class="pi pi-star-fill"></i> {{ item.vote_average | number:'1.1-1' }} / 10</span>
+              <span class="detail-item"><mat-icon>star</mat-icon> {{ item.vote_average | number:'1.1-1' }} / 10</span>
             }
-            <span class="detail-item"><i class="pi pi-tag"></i> {{ item.media_type === 'tv' ? 'TV Series' : 'Movie' }}</span>
+            <span class="detail-item"><mat-icon>label</mat-icon> {{ item.media_type === 'tv' ? 'TV Series' : 'Movie' }}</span>
           </div>
         }
         <div class="result-actions">
           @if (item.media_type === 'tv') {
-            <p-button label="Select Episodes" icon="pi pi-list" size="small" severity="danger" (onClick)="openSeriesDialog(item)" />
+            <button mat-flat-button color="primary" (click)="openSeriesDialog(item)">
+              <mat-icon>list</mat-icon> Select Episodes
+            </button>
           } @else {
-            <p-button label="Add to Catalog" icon="pi pi-plus" size="small" severity="danger" (onClick)="addMovie(item)" />
+            <button mat-flat-button color="primary" (click)="addMovie(item)">
+              <mat-icon>add</mat-icon> Add to Catalog
+            </button>
           }
         </div>
       </div>

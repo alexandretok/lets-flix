@@ -163,10 +163,10 @@ describe('ApiService', () => {
     });
 
     it('should POST create user', () => {
-      service.createUser('test', 'pass', 'user').subscribe();
+      service.createUser('test', 'user').subscribe();
       const req = httpMock.expectOne('/api/users');
       expect(req.request.method).toBe('POST');
-      expect(req.request.body).toEqual({ username: 'test', password: 'pass', role: 'user' });
+      expect(req.request.body).toEqual({ username: 'test', role: 'user' });
       req.flush({ id: 2, username: 'test' });
     });
 

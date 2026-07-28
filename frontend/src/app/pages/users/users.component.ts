@@ -1,30 +1,31 @@
 import { Component, inject, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { InputText } from 'primeng/inputtext';
-import { Button } from 'primeng/button';
-import { Select } from 'primeng/select';
-import { Toast } from 'primeng/toast';
-import { TableModule } from 'primeng/table';
-import { Dialog } from 'primeng/dialog';
-import { MessageService } from 'primeng/api';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatSelectModule } from '@angular/material/select';
+import { MatTableModule } from '@angular/material/table';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { ApiService } from '../../services/api.service';
+import { NotificationService } from '../../services/notification.service';
 import { AuthStore } from '../../stores/auth.store';
 
 @Component({
   selector: 'app-users',
-  imports: [CommonModule, FormsModule, InputText, Button, Select, Toast, TableModule, Dialog],
-  providers: [MessageService],
+  imports: [CommonModule, FormsModule, MatFormFieldModule, MatInputModule, MatButtonModule, MatIconModule, MatSelectModule, MatTableModule, MatTooltipModule],
   templateUrl: './users.component.html',
   styleUrl: './users.component.scss',
 })
 export class UsersComponent implements OnInit {
   authStore = inject(AuthStore);
   private api = inject(ApiService);
-  private messageService = inject(MessageService);
+  private notify = inject(NotificationService);
   private cdr = inject(ChangeDetectorRef);
 
   users: any[] = [];
+  displayedColumns = ['username', 'role', 'passwordChange', 'actions'];
   showCreateDialog = false;
   showPasswordDialog = false;
   generatedPassword = '';
@@ -47,6 +48,18 @@ export class UsersComponent implements OnInit {
     });
   }
 
+  openCreateDialog(): void {
+    this.showCreateDialog = true;
+  }
+
+  closeCreateDialog(): void {
+    this.showCreateDialog = false;
+  }
+
+  closePasswordDialog(): void {
+    this.showPasswordDialog = false;
+  }
+
   createUser(): void {
     this.api.createUser(this.newUsername, this.newRole).subscribe({
       next: (res) => {
@@ -60,7 +73,7 @@ export class UsersComponent implements OnInit {
         this.cdr.markForCheck();
       },
       error: (err) => {
-        this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error?.error || 'Failed to create user' });
+        this.notify.error(err.error?.error || 'Failed to create user');
         this.cdr.markForCheck();
       }
     });
@@ -76,7 +89,7 @@ export class UsersComponent implements OnInit {
         this.cdr.markForCheck();
       },
       error: (err) => {
-        this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error?.error || 'Failed to reset password' });
+        this.notify.error(err.error?.error || 'Failed to reset password');
         this.cdr.markForCheck();
       }
     });
@@ -86,10 +99,10 @@ export class UsersComponent implements OnInit {
     this.api.deleteUser(user.id).subscribe({
       next: () => {
         this.loadUsers();
-        this.messageService.add({ severity: 'success', summary: 'Deleted', detail: `User ${user.username} deleted` });
+        this.notify.success(`User ${user.username} deleted`);
       },
       error: (err) => {
-        this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error?.error || 'Failed to delete user' });
+        this.notify.error(err.error?.error || 'Failed to delete user');
         this.cdr.markForCheck();
       }
     });
@@ -97,6 +110,6 @@ export class UsersComponent implements OnInit {
 
   copyPassword(): void {
     navigator.clipboard.writeText(this.generatedPassword);
-    this.messageService.add({ severity: 'info', summary: 'Copied', detail: 'Password copied to clipboard' });
+    this.notify.info('Password copied to clipboard');
   }
 }

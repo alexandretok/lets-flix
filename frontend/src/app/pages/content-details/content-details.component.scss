@@ -10,12 +10,23 @@
   justify-content: center;
   background: #1a1a2e;
   border-radius: 12px;
-  font-size: 3rem;
-  color: #555;
+  mat-icon { font-size: 3rem; width: 3rem; height: 3rem; color: #555; }
 }
 .info-section { flex: 1; }
 .info-section h1 { color: #e0e0e0; margin: 0 0 0.75rem; }
 .meta-row { display: flex; gap: 0.5rem; margin-bottom: 1rem; }
+.status-tag {
+  padding: 0.2rem 0.6rem;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  &.tag-success { background: #2e7d32; color: #fff; }
+  &.tag-info { background: #0288d1; color: #fff; }
+  &.tag-warn { background: #ed6c02; color: #fff; }
+  &.tag-danger { background: #d32f2f; color: #fff; }
+  &.tag-secondary { background: #555; color: #fff; }
+}
 .overview { color: #a0a0a0; line-height: 1.6; }
 .actions { display: flex; gap: 0.75rem; align-items: center; flex-wrap: wrap; margin: 1.5rem 0; }
 .download-progress { flex: 1; max-width: 300px; }
@@ -23,13 +34,17 @@
 .subtitle-section { margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid rgba(255,255,255,0.1); }
 .subtitle-section h3 { color: #e0e0e0; margin: 0 0 0.75rem; }
 .subtitle-downloader { display: flex; gap: 0.5rem; align-items: center; margin-bottom: 0.75rem; }
-.subtitle-list { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+.subtitle-list { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: 0.5rem; }
 .subtitle-tag {
   background: rgba(255,255,255,0.1);
   padding: 0.25rem 0.75rem;
   border-radius: 20px;
   font-size: 0.8rem;
   color: #e0e0e0;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  mat-icon { font-size: 14px; width: 14px; height: 14px; }
 }
 .episodes-section { margin-top: 2rem; }
 .episodes-header {
@@ -53,3 +68,30 @@
 .ep-number { color: #e94560; font-weight: bold; min-width: 30px; }
 .ep-title { color: #e0e0e0; flex: 1; }
 
+.dialog-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+.dialog-panel {
+  background: #1e1e2e;
+  border-radius: 12px;
+  width: 400px;
+  max-width: 90vw;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+.dialog-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  h2 { margin: 0; font-size: 1.1rem; color: #e0e0e0; }
+}
+.dialog-content {
+  padding: 1.5rem;
+}

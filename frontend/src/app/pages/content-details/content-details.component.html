@@ -1,4 +1,3 @@
-<p-toast />
 @if (media) {
   <div class="details-container">
     <div class="details-header">
@@ -6,47 +5,64 @@
         @if (media.poster_url) {
           <img [src]="media.poster_url" [alt]="media.title" class="detail-poster" />
         } @else {
-          <div class="placeholder-poster"><i class="pi pi-image"></i></div>
+          <div class="placeholder-poster"><mat-icon>image</mat-icon></div>
         }
       </div>
       <div class="info-section">
         <h1>{{ media.title }}</h1>
         <div class="meta-row">
-          <p-tag [value]="media.type" severity="info" />
-          <p-tag [value]="getStatusLabel(media.status)" [severity]="getStatusSeverity(media.status)" />
+          <span class="status-tag tag-info">{{ media.type }}</span>
+          <span class="status-tag" [class]="getStatusClass(media.status)">{{ getStatusLabel(media.status) }}</span>
         </div>
         <p class="overview">{{ media.overview }}</p>
 
         <div class="actions">
           @if (media.status === 'not_found') {
-            <p-button label="Retry Torrent Search" icon="pi pi-refresh" severity="warn" (onClick)="retrySearch()" />
+            <button mat-flat-button color="warn" (click)="retrySearch()">
+              <mat-icon>refresh</mat-icon> Retry Torrent Search
+            </button>
           }
           @if (media.status === 'pending' && media.type === 'movie') {
-            <p-button label="Start Download" icon="pi pi-download" severity="danger" (onClick)="startDownload()" />
+            <button mat-flat-button color="primary" (click)="startDownload()">
+              <mat-icon>download</mat-icon> Start Download
+            </button>
           }
           @if (media.status === 'downloaded') {
-            <p-button label="Play" icon="pi pi-play" severity="success" (onClick)="play()" />
+            <button mat-flat-button color="accent" (click)="play()">
+              <mat-icon>play_arrow</mat-icon> Play
+            </button>
           }
           @if (media.status === 'downloading') {
             <div class="download-progress">
-              <p-progressbar [value]="downloadProgress" />
+              <mat-progress-bar mode="determinate" [value]="downloadProgress"></mat-progress-bar>
               <span class="speed">{{ formatSpeed(downloadSpeed) }}</span>
             </div>
           }
-          <p-button label="Remove from Catalog" icon="pi pi-trash" severity="secondary" [outlined]="true" (onClick)="removeFromCatalog()" />
+          <button mat-stroked-button (click)="removeFromCatalog()">
+            <mat-icon>delete</mat-icon> Remove from Catalog
+          </button>
         </div>
 
         @if (media.type === 'movie') {
           <div class="subtitle-section">
             <h3>Subtitles</h3>
             <div class="subtitle-downloader">
-              <p-select [options]="languages" [(ngModel)]="selectedLanguage" optionLabel="label" optionValue="value" placeholder="Select language" />
-              <p-button label="Download" icon="pi pi-download" size="small" (onClick)="downloadSubtitle()" [disabled]="!selectedLanguage" />
+              <mat-form-field appearance="outline">
+                <mat-label>Language</mat-label>
+                <mat-select [(ngModel)]="selectedLanguage">
+                  @for (lang of languages; track lang.value) {
+                    <mat-option [value]="lang.value">{{ lang.label }}</mat-option>
+                  }
+                </mat-select>
+              </mat-form-field>
+              <button mat-flat-button (click)="downloadSubtitle()" [disabled]="!selectedLanguage">
+                <mat-icon>download</mat-icon> Download
+              </button>
             </div>
             @if (subtitles.length > 0) {
               <div class="subtitle-list">
                 @for (sub of subtitles; track sub.id) {
-                  <span class="subtitle-tag"><i class="pi pi-file"></i> {{ sub.language_code }}</span>
+                  <span class="subtitle-tag"><mat-icon>description</mat-icon> {{ sub.language_code }}</span>
                 }
               </div>
             }
@@ -59,7 +75,9 @@
       <div class="episodes-section">
         <div class="episodes-header">
           <h2>Episodes</h2>
-          <p-button label="Manage Episodes" icon="pi pi-pencil" size="small" severity="danger" (onClick)="openAddEpisodesDialog()" />
+          <button mat-flat-button color="primary" (click)="openAddEpisodesDialog()">
+            <mat-icon>edit</mat-icon> Manage Episodes
+          </button>
         </div>
         @for (season of groupedEpisodes; track season.number) {
           <div class="season-group">
@@ -69,18 +87,28 @@
                 <div class="episode-row">
                   <span class="ep-number">E{{ ep.episode_number }}</span>
                   <span class="ep-title">{{ ep.title || 'Episode ' + ep.episode_number }}</span>
-                  <p-tag [value]="getStatusLabel(ep.status)" [severity]="getStatusSeverity(ep.status)" />
+                  <span class="status-tag" [class]="getStatusClass(ep.status)">{{ getStatusLabel(ep.status) }}</span>
                   @if (ep.status === 'pending') {
-                    <p-button icon="pi pi-download" [text]="true" size="small" (onClick)="startEpisodeDownload(ep.id)" pTooltip="Start download" />
+                    <button mat-icon-button matTooltip="Start download" (click)="startEpisodeDownload(ep.id)">
+                      <mat-icon>download</mat-icon>
+                    </button>
                   }
                   @if (ep.status === 'not_found') {
-                    <p-button icon="pi pi-refresh" [text]="true" size="small" severity="warn" (onClick)="retryEpisodeSearch(ep.id)" />
+                    <button mat-icon-button matTooltip="Retry" color="warn" (click)="retryEpisodeSearch(ep.id)">
+                      <mat-icon>refresh</mat-icon>
+                    </button>
                   }
                   @if (ep.status === 'downloaded') {
-                    <p-button icon="pi pi-play" [text]="true" size="small" severity="success" (onClick)="playEpisode(ep.id)" />
-                    <p-button icon="pi pi-language" [text]="true" size="small" (onClick)="openEpisodeSubtitleDialog(ep)" pTooltip="Subtitles" />
+                    <button mat-icon-button matTooltip="Play" (click)="playEpisode(ep.id)">
+                      <mat-icon>play_arrow</mat-icon>
+                    </button>
+                    <button mat-icon-button matTooltip="Subtitles" (click)="openEpisodeSubtitleDialog(ep)">
+                      <mat-icon>subtitles</mat-icon>
+                    </button>
                   }
-                  <p-button icon="pi pi-trash" [text]="true" size="small" severity="secondary" (onClick)="removeEpisode(ep.id)" />
+                  <button mat-icon-button matTooltip="Remove" (click)="removeEpisode(ep.id)">
+                    <mat-icon>delete</mat-icon>
+                  </button>
                 </div>
               }
             </div>
@@ -99,18 +127,39 @@
   (saved)="onEpisodesSaved($event)"
 />
 
-<p-dialog [header]="'Subtitles - E' + selectedEpisodeForSub?.episode_number" [(visible)]="showEpisodeSubDialog" [modal]="true" [style]="{width: '400px'}" [draggable]="false">
-  @if (selectedEpisodeForSub) {
-    <div class="subtitle-downloader">
-      <p-select [options]="languages" [(ngModel)]="selectedLanguage" optionLabel="label" optionValue="value" placeholder="Select language" />
-      <p-button label="Download" icon="pi pi-download" size="small" (onClick)="downloadEpisodeSubtitle()" [disabled]="!selectedLanguage" />
-    </div>
-    @if (episodeSubtitles.length > 0) {
-      <div class="subtitle-list">
-        @for (sub of episodeSubtitles; track sub.id) {
-          <span class="subtitle-tag"><i class="pi pi-file"></i> {{ sub.language_code }}</span>
+@if (showEpisodeSubDialog) {
+  <div class="dialog-overlay" (click)="closeEpisodeSubDialog()">
+    <div class="dialog-panel" (click)="$event.stopPropagation()">
+      <div class="dialog-header">
+        <h2>Subtitles - E{{ selectedEpisodeForSub?.episode_number }}</h2>
+        <button mat-icon-button (click)="closeEpisodeSubDialog()">
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
+      <div class="dialog-content">
+        @if (selectedEpisodeForSub) {
+          <div class="subtitle-downloader">
+            <mat-form-field appearance="outline">
+              <mat-label>Language</mat-label>
+              <mat-select [(ngModel)]="selectedLanguage">
+                @for (lang of languages; track lang.value) {
+                  <mat-option [value]="lang.value">{{ lang.label }}</mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+            <button mat-flat-button (click)="downloadEpisodeSubtitle()" [disabled]="!selectedLanguage">
+              <mat-icon>download</mat-icon> Download
+            </button>
+          </div>
+          @if (episodeSubtitles.length > 0) {
+            <div class="subtitle-list">
+              @for (sub of episodeSubtitles; track sub.id) {
+                <span class="subtitle-tag"><mat-icon>description</mat-icon> {{ sub.language_code }}</span>
+              }
+            </div>
+          }
         }
       </div>
-    }
-  }
-</p-dialog>
+    </div>
+  </div>
+}

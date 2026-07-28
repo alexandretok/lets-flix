@@ -4,13 +4,13 @@
       <h2 class="logo">LetsFlix</h2>
     </div>
     <ul class="nav-links">
-      <li><a routerLink="/home" routerLinkActive="active"><i class="pi pi-home"></i> Home</a></li>
-      <li><a routerLink="/browse" routerLinkActive="active"><i class="pi pi-th-large"></i> My Catalog</a></li>
-      <li><a routerLink="/search" routerLinkActive="active"><i class="pi pi-search"></i> Search</a></li>
-      <li><a routerLink="/settings" routerLinkActive="active"><i class="pi pi-cog"></i> Settings</a></li>
+      <li><a routerLink="/home" routerLinkActive="active"><mat-icon>home</mat-icon> Home</a></li>
+      <li><a routerLink="/browse" routerLinkActive="active"><mat-icon>grid_view</mat-icon> My Catalog</a></li>
+      <li><a routerLink="/search" routerLinkActive="active"><mat-icon>search</mat-icon> Search</a></li>
+      <li><a routerLink="/settings" routerLinkActive="active"><mat-icon>settings</mat-icon> Settings</a></li>
       @if (authStore.isAdmin()) {
-        <li><a routerLink="/downloads" routerLinkActive="active"><i class="pi pi-cloud-download"></i> Downloads</a></li>
-        <li><a routerLink="/users" routerLinkActive="active"><i class="pi pi-users"></i> Users</a></li>
+        <li><a routerLink="/downloads" routerLinkActive="active"><mat-icon>cloud_download</mat-icon> Downloads</a></li>
+        <li><a routerLink="/users" routerLinkActive="active"><mat-icon>group</mat-icon> Users</a></li>
       }
     </ul>
     <div class="sidebar-footer">
@@ -19,11 +19,14 @@
           <span class="storage-label">Storage</span>
           <span class="storage-free">{{ storageFree }} free</span>
         </div>
-        <p-progressbar [value]="storagePercent" [showValue]="true" [style]="{'height': '10px'}" />
+        <mat-progress-bar mode="determinate" [value]="storagePercent"></mat-progress-bar>
+        <span class="storage-percent">{{ storagePercent }}%</span>
       </div>
       <div class="user-section">
-        <span class="username"><i class="pi pi-user"></i> {{ authStore.user()?.username }}</span>
-        <p-button icon="pi pi-sign-out" [text]="true" severity="secondary" (onClick)="logout()" size="small" />
+        <span class="username"><mat-icon>person</mat-icon> {{ authStore.user()?.username }}</span>
+        <button mat-icon-button (click)="logout()">
+          <mat-icon>logout</mat-icon>
+        </button>
       </div>
     </div>
   </nav>

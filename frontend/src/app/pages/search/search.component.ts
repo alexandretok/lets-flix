@@ -2,23 +2,24 @@ import { Component, inject, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
-import { InputText } from 'primeng/inputtext';
-import { Button } from 'primeng/button';
-import { Toast } from 'primeng/toast';
-import { MessageService } from 'primeng/api';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { ApiService } from '../../services/api.service';
+import { NotificationService } from '../../services/notification.service';
 import { EpisodeSelectorComponent, EpisodeSaveResult } from '../../components/episode-selector/episode-selector.component';
 
 @Component({
   selector: 'app-search',
-  imports: [CommonModule, FormsModule, InputText, Button, Toast, EpisodeSelectorComponent],
-  providers: [MessageService],
+  imports: [CommonModule, FormsModule, MatFormFieldModule, MatInputModule, MatButtonModule, MatIconModule, MatProgressSpinnerModule, EpisodeSelectorComponent],
   templateUrl: './search.component.html',
   styleUrl: './search.component.scss',
 })
 export class SearchComponent implements OnInit {
   private api = inject(ApiService);
-  private messageService = inject(MessageService);
+  private notify = inject(NotificationService);
   private cdr = inject(ChangeDetectorRef);
   private route = inject(ActivatedRoute);
 
@@ -72,10 +73,10 @@ export class SearchComponent implements OnInit {
   addMovie(item: any): void {
     this.api.addToCatalog(item.id, 'movie').subscribe({
       next: () => {
-        this.messageService.add({ severity: 'success', summary: 'Added', detail: `${item.title} added to catalog` });
+        this.notify.success(`${item.title} added to catalog`);
       },
       error: (err) => {
-        this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error?.error || 'Failed to add' });
+        this.notify.error(err.error?.error || 'Failed to add');
       }
     });
   }
@@ -104,6 +105,6 @@ export class SearchComponent implements OnInit {
     const parts: string[] = [];
     if (result.added > 0) parts.push(`${result.added} added`);
     if (result.removed > 0) parts.push(`${result.removed} removed`);
-    this.messageService.add({ severity: 'success', summary: 'Updated', detail: `Episodes: ${parts.join(', ')}` });
+    this.notify.success(`Episodes: ${parts.join(', ')}`);
   }
 }

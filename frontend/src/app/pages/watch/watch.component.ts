@@ -1,13 +1,14 @@
 import { Component, inject, OnInit, OnDestroy, ElementRef, ViewChild, AfterViewInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Button } from 'primeng/button';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
 import { ApiService } from '../../services/api.service';
 import { AuthStore } from '../../stores/auth.store';
 
 @Component({
   selector: 'app-watch',
-  imports: [CommonModule, Button],
+  imports: [CommonModule, MatButtonModule, MatIconModule],
   templateUrl: './watch.component.html',
   styleUrl: './watch.component.scss',
 })

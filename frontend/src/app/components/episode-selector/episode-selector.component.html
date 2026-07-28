@@ -1,31 +1,49 @@
-<p-dialog header="Manage Episodes" [(visible)]="visible" [modal]="true" [style]="{width: '500px'}" [draggable]="false" (onHide)="onDialogHide()">
-  @if (loading) {
-    <div class="loading-spinner"><i class="pi pi-spin pi-spinner" style="font-size: 1.5rem;"></i> Loading...</div>
-  }
-  <div class="episodes-selector">
-    @for (season of seasons; track season.season_number) {
-      <div class="season-block">
-        <div class="season-header">
-          <p-checkbox [(ngModel)]="season.selected" [binary]="true" [indeterminate]="season.indeterminate" (onChange)="toggleSeason(season)" />
-          <span class="season-label" (click)="toggleCollapse(season)">{{ season.name }} ({{ season.episode_count }} episodes)</span>
-          @if (seasons.length > 1) {
-            <i class="pi collapse-icon" [class.pi-chevron-down]="season.collapsed" [class.pi-chevron-up]="!season.collapsed" (click)="toggleCollapse(season)"></i>
+@if (visible) {
+  <div class="dialog-overlay" (click)="close()">
+    <div class="dialog-panel" (click)="$event.stopPropagation()">
+      <div class="dialog-header">
+        <h2>Manage Episodes</h2>
+        <button mat-icon-button (click)="close()">
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
+      <div class="dialog-content">
+        @if (loading) {
+          <div class="loading-spinner"><mat-spinner diameter="32"></mat-spinner> <span>Loading...</span></div>
+        }
+        <div class="episodes-selector">
+          @for (season of seasons; track season.season_number) {
+            <div class="season-block">
+              <div class="season-header">
+                <mat-checkbox
+                  [checked]="season.selected"
+                  [indeterminate]="season.indeterminate"
+                  (change)="season.selected = $event.checked; toggleSeason(season)">
+                </mat-checkbox>
+                <span class="season-label" (click)="toggleCollapse(season)">{{ season.name }} ({{ season.episode_count }} episodes)</span>
+                @if (seasons.length > 1) {
+                  <mat-icon class="collapse-icon" (click)="toggleCollapse(season)">{{ season.collapsed ? 'expand_more' : 'expand_less' }}</mat-icon>
+                }
+              </div>
+              @if (season.episodes && !season.collapsed) {
+                <div class="episodes-list">
+                  @for (ep of season.episodes; track ep.episode_number) {
+                    <div class="episode-item" (click)="onEpisodeClick($event, season, ep)">
+                      <mat-checkbox [checked]="ep.selected" class="no-pointer" (click)="$event.preventDefault()"></mat-checkbox>
+                      <span>E{{ ep.episode_number }} - {{ ep.name }}</span>
+                    </div>
+                  }
+                </div>
+              }
+            </div>
           }
         </div>
-        @if (season.episodes && !season.collapsed) {
-          <div class="episodes-list">
-            @for (ep of season.episodes; track ep.episode_number) {
-              <div class="episode-item" (click)="onEpisodeClick($event, season, ep)">
-                <p-checkbox [ngModel]="ep.selected" [binary]="true" class="no-pointer" />
-                <span>E{{ ep.episode_number }} - {{ ep.name }}</span>
-              </div>
-            }
-          </div>
-        }
       </div>
-    }
+      <div class="dialog-footer">
+        <button mat-flat-button color="primary" (click)="save()" [disabled]="!hasChanges()">
+          <mat-icon>check</mat-icon> Save Changes
+        </button>
+      </div>
+    </div>
   </div>
-  <div class="dialog-footer">
-    <p-button label="Save Changes" icon="pi pi-check" severity="danger" (onClick)="save()" [disabled]="!hasChanges()" />
-  </div>
-</p-dialog>
+}

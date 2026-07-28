@@ -1,13 +1,17 @@
 <div class="browse-header">
   <h1>My Catalog</h1>
-  <p-button label="Add Content" icon="pi pi-plus" routerLink="/search" severity="danger" />
+  <a mat-flat-button color="primary" routerLink="/search">
+    <mat-icon>add</mat-icon> Add Content
+  </a>
 </div>
 @if (catalog.length === 0) {
   <div class="empty-state">
-    <i class="pi pi-video" style="font-size: 4rem; color: #555;"></i>
+    <mat-icon class="empty-icon">movie</mat-icon>
     <h3>Your catalog is empty</h3>
     <p>Search for movies and series to add them to your catalog.</p>
-    <p-button label="Search Content" icon="pi pi-search" routerLink="/search" severity="danger" />
+    <a mat-flat-button color="primary" routerLink="/search">
+      <mat-icon>search</mat-icon> Search Content
+    </a>
   </div>
 } @else {
   <div class="catalog-grid">
@@ -17,9 +21,9 @@
           @if (item.poster_url) {
             <img [src]="item.poster_url" [alt]="item.title" />
           } @else {
-            <div class="placeholder-poster"><i class="pi pi-image"></i></div>
+            <div class="placeholder-poster"><mat-icon>image</mat-icon></div>
           }
-          <p-tag [value]="getStatusLabel(item.status)" [severity]="getStatusSeverity(item.status)" class="status-badge" />
+          <span class="status-tag" [class]="getStatusClass(item.status)">{{ getStatusLabel(item.status) }}</span>
         </div>
         <div class="card-info">
           <h4>{{ item.title }}</h4>

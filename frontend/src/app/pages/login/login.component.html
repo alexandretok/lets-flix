@@ -1,4 +1,3 @@
-<p-toast />
 <div class="login-container">
   <div class="login-card">
     <div class="logo-section">
@@ -6,15 +5,23 @@
       <p class="subtitle">Your personal streaming platform</p>
     </div>
     <div class="form-section">
-      <div class="field">
-        <label for="username">Username</label>
-        <input pInputText id="username" [(ngModel)]="username" placeholder="Enter username" class="w-full" />
-      </div>
-      <div class="field">
-        <label for="password">Password</label>
-        <p-password id="password" [(ngModel)]="password" [feedback]="false" placeholder="Enter password" styleClass="w-full" [toggleMask]="true" (keydown.enter)="onLogin()" />
-      </div>
-      <p-button label="Sign In" (onClick)="onLogin()" [loading]="authStore.loading()" styleClass="w-full" severity="danger" />
+      <mat-form-field appearance="outline">
+        <mat-label>Username</mat-label>
+        <input matInput [(ngModel)]="username" placeholder="Enter username" />
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Password</mat-label>
+        <input matInput [type]="hidePassword ? 'password' : 'text'" [(ngModel)]="password" placeholder="Enter password" (keydown.enter)="onLogin()" />
+        <button mat-icon-button matSuffix (click)="hidePassword = !hidePassword" type="button">
+          <mat-icon>{{ hidePassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+        </button>
+      </mat-form-field>
+      <button mat-flat-button color="primary" (click)="onLogin()" [disabled]="authStore.loading()" class="w-full login-btn">
+        @if (authStore.loading()) {
+          <mat-icon class="spinning">sync</mat-icon>
+        }
+        Sign In
+      </button>
     </div>
   </div>
 </div>

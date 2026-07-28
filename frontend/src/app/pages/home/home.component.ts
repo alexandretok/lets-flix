@@ -2,24 +2,23 @@ import { Component, inject, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { Dialog } from 'primeng/dialog';
-import { Button } from 'primeng/button';
-import { Checkbox } from 'primeng/checkbox';
-import { Toast } from 'primeng/toast';
-import { MessageService } from 'primeng/api';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { ApiService } from '../../services/api.service';
+import { NotificationService } from '../../services/notification.service';
 
 @Component({
   selector: 'app-home',
-  imports: [CommonModule, FormsModule, Dialog, Button, Checkbox, Toast],
-  providers: [MessageService],
+  imports: [CommonModule, FormsModule, MatButtonModule, MatIconModule, MatCheckboxModule, MatProgressSpinnerModule],
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss',
 })
 export class HomeComponent implements OnInit {
   private api = inject(ApiService);
   private router = inject(Router);
-  private messageService = inject(MessageService);
+  private notify = inject(NotificationService);
   private cdr = inject(ChangeDetectorRef);
 
   trendingMovies: any[] = [];
@@ -71,6 +70,10 @@ export class HomeComponent implements OnInit {
     });
   }
 
+  closeDetail(): void {
+    this.showDetailDialog = false;
+  }
+
   addToCatalog(): void {
     if (!this.selectedItem) return;
 
@@ -83,11 +86,11 @@ export class HomeComponent implements OnInit {
       next: (res) => {
         this.isInCatalog = true;
         this.catalogMediaId = res.media.id;
-        this.messageService.add({ severity: 'success', summary: 'Added', detail: `${this.selectedItem.title} added to catalog` });
+        this.notify.success(`${this.selectedItem.title} added to catalog`);
         this.cdr.detectChanges();
       },
       error: (err) => {
-        this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error?.error || 'Failed to add' });
+        this.notify.error(err.error?.error || 'Failed to add');
       }
     });
   }
@@ -99,11 +102,11 @@ export class HomeComponent implements OnInit {
       next: () => {
         this.isInCatalog = false;
         this.catalogMediaId = null;
-        this.messageService.add({ severity: 'success', summary: 'Removed', detail: `${this.selectedItem.title} removed from catalog` });
+        this.notify.success(`${this.selectedItem.title} removed from catalog`);
         this.cdr.detectChanges();
       },
       error: (err) => {
-        this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error?.error || 'Failed to remove' });
+        this.notify.error(err.error?.error || 'Failed to remove');
       }
     });
   }
@@ -198,11 +201,11 @@ export class HomeComponent implements OnInit {
         this.isInCatalog = true;
         this.catalogMediaId = res.media.id;
         this.showEpisodeSelector = false;
-        this.messageService.add({ severity: 'success', summary: 'Added', detail: `${selected.length} episodes added to catalog` });
+        this.notify.success(`${selected.length} episodes added to catalog`);
         this.cdr.detectChanges();
       },
       error: (err) => {
-        this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error?.error || 'Failed to add' });
+        this.notify.error(err.error?.error || 'Failed to add');
       }
     });
   }

@@ -1,16 +1,17 @@
 import { Component, inject, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { RouterLink, RouterLinkActive, RouterOutlet, Router } from '@angular/router';
-import { Button } from 'primeng/button';
-import { ProgressBarModule } from 'primeng/progressbar';
+import { CommonModule } from '@angular/common';
+import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { AuthStore } from '../stores/auth.store';
 import { ApiService } from '../services/api.service';
 import { SSEService } from '../services/sse.service';
-import { CommonModule } from '@angular/common';
 import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-layout',
-  imports: [CommonModule, RouterLink, RouterLinkActive, RouterOutlet, Button, ProgressBarModule],
+  imports: [CommonModule, RouterLink, RouterLinkActive, RouterOutlet, MatIconModule, MatButtonModule, MatProgressBarModule],
   templateUrl: './layout.component.html',
   styleUrl: './layout.component.scss',
 })

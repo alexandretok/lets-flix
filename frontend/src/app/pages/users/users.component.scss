@@ -1,4 +1,4 @@
-.users-container { max-width: 800px; }
+.users-container { max-width: 900px; }
 .users-header {
   display: flex;
   justify-content: space-between;
@@ -6,25 +6,57 @@
   margin-bottom: 2rem;
 }
 .users-header h1 { color: #e0e0e0; margin: 0; }
+.users-table {
+  width: 100%;
+  background: transparent;
+}
 .role-badge {
-  padding: 0.25rem 0.75rem;
-  border-radius: 20px;
-  font-size: 0.8rem;
+  font-size: 0.75rem;
+  padding: 0.2rem 0.6rem;
+  border-radius: 4px;
   background: rgba(255,255,255,0.1);
   color: #ccc;
+  text-transform: capitalize;
+  &.admin { background: rgba(233, 69, 96, 0.2); color: #e94560; }
 }
-.role-badge.admin { background: rgba(233,69,96,0.2); color: #e94560; }
-.create-form .field { margin-bottom: 1rem; }
-.create-form .field label {
-  display: block;
-  margin-bottom: 0.5rem;
-  color: #ccc;
+.dialog-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
 }
-.w-full { width: 100%; }
-.info-text { font-size: 0.85rem; color: #888; margin-top: 0.75rem; }
-.password-display {
-  p { color: #ccc; margin: 0 0 0.75rem; }
+.dialog-panel {
+  background: #1e1e2e;
+  border-radius: 12px;
+  width: 420px;
+  max-width: 90vw;
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
+.dialog-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  h2 { margin: 0; font-size: 1.1rem; color: #e0e0e0; }
+}
+.dialog-content {
+  padding: 1.5rem;
+}
+.create-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.info-text {
+  color: #a0a0a0;
+  font-size: 0.85rem;
+  margin: 0.5rem 0;
+}
+.password-display p { color: #e0e0e0; }
 .password-box {
   display: flex;
   align-items: center;
@@ -32,13 +64,12 @@
   background: rgba(255,255,255,0.05);
   padding: 0.75rem 1rem;
   border-radius: 8px;
-  margin-bottom: 0.75rem;
-
+  margin: 0.75rem 0;
   code {
     font-size: 1.1rem;
     color: #e94560;
-    font-family: monospace;
     flex: 1;
-    letter-spacing: 0.5px;
+    font-family: monospace;
   }
 }
+.w-full { width: 100%; }

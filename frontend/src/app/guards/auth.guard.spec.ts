@@ -54,12 +54,12 @@ describe('Auth Guards', () => {
       expect(result).toBe(true);
     });
 
-    it('should redirect to /browse when already authenticated', () => {
+    it('should redirect to /home when already authenticated', () => {
       store.loginSuccess('token', { id: 1, username: 'admin', role: 'admin', requires_password_change: false });
 
       const result = TestBed.runInInjectionContext(() => guestGuard(mockRoute, mockState));
       expect(result).toBe(false);
-      expect(router.navigate).toHaveBeenCalledWith(['/browse']);
+      expect(router.navigate).toHaveBeenCalledWith(['/home']);
     });
 
     it('should allow access when authenticated but password change required', () => {
@@ -78,12 +78,12 @@ describe('Auth Guards', () => {
       expect(result).toBe(true);
     });
 
-    it('should redirect to /browse for non-admin users', () => {
+    it('should redirect to /home for non-admin users', () => {
       store.loginSuccess('token', { id: 2, username: 'user', role: 'user', requires_password_change: false });
 
       const result = TestBed.runInInjectionContext(() => adminGuard(mockRoute, mockState));
       expect(result).toBe(false);
-      expect(router.navigate).toHaveBeenCalledWith(['/browse']);
+      expect(router.navigate).toHaveBeenCalledWith(['/home']);
     });
   });
 });

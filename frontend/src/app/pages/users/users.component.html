@@ -1,57 +1,102 @@
-<p-toast />
 <div class="users-container">
   <div class="users-header">
     <h1>User Management</h1>
-    <p-button label="Create User" icon="pi pi-user-plus" severity="danger" (onClick)="showCreateDialog = true" />
+    <button mat-flat-button color="primary" (click)="openCreateDialog()">
+      <mat-icon>person_add</mat-icon> Create User
+    </button>
   </div>
 
-  <p-table [value]="users" [tableStyle]="{'min-width': '50rem'}">
-    <ng-template #header>
-      <tr>
-        <th>Username</th>
-        <th>Role</th>
-        <th>Password Change Required</th>
-        <th>Actions</th>
-      </tr>
-    </ng-template>
-    <ng-template #body let-user>
-      <tr>
-        <td>{{ user.username }}</td>
-        <td><span class="role-badge" [class.admin]="user.role === 'admin'">{{ user.role }}</span></td>
-        <td>{{ user.requires_password_change ? 'Yes' : 'No' }}</td>
-        <td>
-          @if (user.id !== authStore.user()?.id) {
-            <p-button icon="pi pi-key" [text]="true" severity="warn" (onClick)="resetPassword(user)" pTooltip="Reset password" />
-            <p-button icon="pi pi-trash" [text]="true" severity="danger" (onClick)="deleteUser(user)" pTooltip="Delete user" />
-          }
-        </td>
-      </tr>
-    </ng-template>
-  </p-table>
+  <table mat-table [dataSource]="users" class="users-table">
+    <ng-container matColumnDef="username">
+      <th mat-header-cell *matHeaderCellDef>Username</th>
+      <td mat-cell *matCellDef="let user">{{ user.username }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="role">
+      <th mat-header-cell *matHeaderCellDef>Role</th>
+      <td mat-cell *matCellDef="let user">
+        <span class="role-badge" [class.admin]="user.role === 'admin'">{{ user.role }}</span>
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="passwordChange">
+      <th mat-header-cell *matHeaderCellDef>Password Change Required</th>
+      <td mat-cell *matCellDef="let user">{{ user.requires_password_change ? 'Yes' : 'No' }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="actions">
+      <th mat-header-cell *matHeaderCellDef>Actions</th>
+      <td mat-cell *matCellDef="let user">
+        @if (user.id !== authStore.user()?.id) {
+          <button mat-icon-button matTooltip="Reset password" (click)="resetPassword(user)">
+            <mat-icon>key</mat-icon>
+          </button>
+          <button mat-icon-button matTooltip="Delete user" color="warn" (click)="deleteUser(user)">
+            <mat-icon>delete</mat-icon>
+          </button>
+        }
+      </td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+  </table>
 </div>
 
-<p-dialog header="Create User" [(visible)]="showCreateDialog" [modal]="true" [style]="{width: '400px'}">
-  <div class="create-form">
-    <div class="field">
-      <label>Username</label>
-      <input pInputText [(ngModel)]="newUsername" class="w-full" />
+@if (showCreateDialog) {
+  <div class="dialog-overlay" (click)="closeCreateDialog()">
+    <div class="dialog-panel" (click)="$event.stopPropagation()">
+      <div class="dialog-header">
+        <h2>Create User</h2>
+        <button mat-icon-button (click)="closeCreateDialog()">
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
+      <div class="dialog-content">
+        <div class="create-form">
+          <mat-form-field appearance="outline">
+            <mat-label>Username</mat-label>
+            <input matInput [(ngModel)]="newUsername" />
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Role</mat-label>
+            <mat-select [(ngModel)]="newRole">
+              @for (role of roleOptions; track role.value) {
+                <mat-option [value]="role.value">{{ role.label }}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+          <p class="info-text">A temporary password will be generated automatically. The user will be required to change it on first login.</p>
+          <button mat-flat-button color="primary" (click)="createUser()" [disabled]="!newUsername" class="w-full">
+            <mat-icon>check</mat-icon> Create
+          </button>
+        </div>
+      </div>
     </div>
-    <div class="field">
-      <label>Role</label>
-      <p-select [options]="roleOptions" [(ngModel)]="newRole" optionLabel="label" optionValue="value" [style]="{width: '100%'}" />
-    </div>
-    <p class="info-text">A temporary password will be generated automatically. The user will be required to change it on first login.</p>
-    <p-button label="Create" icon="pi pi-check" severity="danger" (onClick)="createUser()" [disabled]="!newUsername" styleClass="w-full" />
   </div>
-</p-dialog>
+}
 
-<p-dialog header="Temporary Password" [(visible)]="showPasswordDialog" [modal]="true" [style]="{width: '420px'}" [closable]="true">
-  <div class="password-display">
-    <p>Temporary password for <strong>{{ generatedForUser }}</strong>:</p>
-    <div class="password-box">
-      <code>{{ generatedPassword }}</code>
-      <p-button icon="pi pi-copy" [text]="true" (onClick)="copyPassword()" pTooltip="Copy" />
+@if (showPasswordDialog) {
+  <div class="dialog-overlay" (click)="closePasswordDialog()">
+    <div class="dialog-panel" (click)="$event.stopPropagation()">
+      <div class="dialog-header">
+        <h2>Temporary Password</h2>
+        <button mat-icon-button (click)="closePasswordDialog()">
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
+      <div class="dialog-content">
+        <div class="password-display">
+          <p>Temporary password for <strong>{{ generatedForUser }}</strong>:</p>
+          <div class="password-box">
+            <code>{{ generatedPassword }}</code>
+            <button mat-icon-button matTooltip="Copy" (click)="copyPassword()">
+              <mat-icon>content_copy</mat-icon>
+            </button>
+          </div>
+          <p class="info-text">The user will be required to change this password on first login. Make sure to save it now — it won't be shown again.</p>
+        </div>
+      </div>
     </div>
-    <p class="info-text">The user will be required to change this password on first login. Make sure to save it now — it won't be shown again.</p>
   </div>
-</p-dialog>
+}

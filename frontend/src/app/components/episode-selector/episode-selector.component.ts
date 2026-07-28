@@ -1,9 +1,11 @@
 import { Component, inject, Input, Output, EventEmitter, OnChanges, SimpleChanges, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Dialog } from 'primeng/dialog';
-import { Checkbox } from 'primeng/checkbox';
-import { Button } from 'primeng/button';
+import { MatDialogModule } from '@angular/material/dialog';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { ApiService } from '../../services/api.service';
 
 export interface EpisodeSaveResult {
@@ -13,7 +15,7 @@ export interface EpisodeSaveResult {
 
 @Component({
   selector: 'app-episode-selector',
-  imports: [CommonModule, FormsModule, Dialog, Checkbox, Button],
+  imports: [CommonModule, FormsModule, MatDialogModule, MatCheckboxModule, MatButtonModule, MatIconModule, MatProgressSpinnerModule],
   templateUrl: './episode-selector.component.html',
   styleUrl: './episode-selector.component.scss',
 })
@@ -188,10 +190,6 @@ export class EpisodeSelectorComponent implements OnChanges {
 
   close(): void {
     this.visible = false;
-    this.visibleChange.emit(false);
-  }
-
-  onDialogHide(): void {
     this.visibleChange.emit(false);
   }
 }

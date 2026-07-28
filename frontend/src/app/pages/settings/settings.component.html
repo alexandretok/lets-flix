@@ -1,32 +1,45 @@
-<p-toast />
 <div class="settings-container">
   <h1>Settings</h1>
 
   <div class="settings-section">
     <h3>Subtitles</h3>
-    <div class="field">
-      <label>Preferred Languages</label>
-      <p-multiselect [options]="languageOptions" [(ngModel)]="subtitleLanguages" optionLabel="label" optionValue="value" placeholder="Select languages" [style]="{width: '100%'}" />
-    </div>
+    <mat-form-field appearance="outline">
+      <mat-label>Preferred Languages</mat-label>
+      <mat-select multiple [(ngModel)]="subtitleLanguages">
+        @for (lang of languageOptions; track lang.value) {
+          <mat-option [value]="lang.value">{{ lang.label }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
   </div>
 
   <div class="settings-section">
     <h3>Downloads</h3>
-    <div class="field">
-      <label>Allowed Resolutions</label>
-      <p-multiselect [options]="resolutionOptions" [(ngModel)]="allowedResolutions" optionLabel="label" optionValue="value" placeholder="Select resolutions" [style]="{width: '100%'}" />
-    </div>
+    <mat-form-field appearance="outline">
+      <mat-label>Allowed Resolutions</mat-label>
+      <mat-select multiple [(ngModel)]="allowedResolutions">
+        @for (res of resolutionOptions; track res.value) {
+          <mat-option [value]="res.value">{{ res.label }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
   </div>
 
   <div class="settings-section">
     <h3>Storage</h3>
-    <div class="field toggle-field">
-      <label>Auto-delete files after watching</label>
-      <p-toggleswitch [(ngModel)]="autoDeleteWatched" />
+    <div class="toggle-field">
+      <mat-slide-toggle [(ngModel)]="autoDeleteWatched">Auto-delete files after watching</mat-slide-toggle>
     </div>
   </div>
 
   <div class="actions">
-    <p-button label="Save Settings" icon="pi pi-check" severity="danger" (onClick)="save()" [loading]="saving" />
+    <button mat-flat-button color="primary" (click)="save()" [disabled]="saving">
+      @if (saving) {
+        <mat-icon class="spinning">sync</mat-icon>
+      } @else {
+        <mat-icon>check</mat-icon>
+      }
+      Save Settings
+    </button>
   </div>
 </div>

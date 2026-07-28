@@ -1,4 +1,3 @@
-<p-toast />
 <div class="home-container">
   <div class="welcome-section">
     <h1>Welcome to <span class="brand">LetsFlix</span></h1>
@@ -6,13 +5,13 @@
   </div>
 
   @if (loading) {
-    <div class="loading"><i class="pi pi-spin pi-spinner" style="font-size: 2rem;"></i></div>
+    <div class="loading"><mat-spinner diameter="40"></mat-spinner></div>
   }
 
   @if (!loading) {
     <section class="trending-section">
       <div class="section-header">
-        <h2><i class="pi pi-bolt"></i> Trending Movies</h2>
+        <h2><mat-icon>bolt</mat-icon> Trending Movies</h2>
         <span class="time-window">This Week</span>
       </div>
       <div class="carousel-wrapper">
@@ -23,10 +22,10 @@
                 @if (item.poster_url) {
                   <img [src]="item.poster_url" [alt]="item.title" />
                 } @else {
-                  <div class="placeholder-poster"><i class="pi pi-image"></i></div>
+                  <div class="placeholder-poster"><mat-icon>image</mat-icon></div>
                 }
                 <div class="rating-badge">
-                  <i class="pi pi-star-fill"></i> {{ item.vote_average | number:'1.1-1' }}
+                  <mat-icon>star</mat-icon> {{ item.vote_average | number:'1.1-1' }}
                 </div>
               </div>
               <div class="card-info">
@@ -41,7 +40,7 @@
 
     <section class="trending-section">
       <div class="section-header">
-        <h2><i class="pi pi-bolt"></i> Trending Series</h2>
+        <h2><mat-icon>bolt</mat-icon> Trending Series</h2>
         <span class="time-window">This Week</span>
       </div>
       <div class="carousel-wrapper">
@@ -52,10 +51,10 @@
                 @if (item.poster_url) {
                   <img [src]="item.poster_url" [alt]="item.title" />
                 } @else {
-                  <div class="placeholder-poster"><i class="pi pi-image"></i></div>
+                  <div class="placeholder-poster"><mat-icon>image</mat-icon></div>
                 }
                 <div class="rating-badge">
-                  <i class="pi pi-star-fill"></i> {{ item.vote_average | number:'1.1-1' }}
+                  <mat-icon>star</mat-icon> {{ item.vote_average | number:'1.1-1' }}
                 </div>
               </div>
               <div class="card-info">
@@ -70,65 +69,88 @@
   }
 </div>
 
-<p-dialog [header]="selectedItem?.title" [(visible)]="showDetailDialog" [modal]="true" [style]="{width: '550px'}" [draggable]="false">
-  @if (selectedItem) {
-    <div class="detail-popup">
-      <div class="detail-top">
-        <div class="detail-poster">
-          @if (selectedItem.poster_url) {
-            <img [src]="selectedItem.poster_url" [alt]="selectedItem.title" />
-          } @else {
-            <div class="placeholder-poster-sm"><i class="pi pi-image"></i></div>
-          }
-        </div>
-        <div class="detail-meta">
-          <div class="detail-badges">
-            <span class="type-badge">{{ selectedItem.media_type === 'tv' ? 'TV Series' : 'Movie' }}</span>
-            <span class="year-badge">{{ selectedItem.release_date | slice:0:4 }}</span>
-            @if (selectedItem.vote_average) {
-              <span class="rating-badge-inline"><i class="pi pi-star-fill"></i> {{ selectedItem.vote_average | number:'1.1-1' }}</span>
-            }
-          </div>
-          <p class="detail-overview">{{ selectedItem.overview }}</p>
-        </div>
+@if (showDetailDialog) {
+  <div class="dialog-overlay" (click)="closeDetail()">
+    <div class="dialog-panel" (click)="$event.stopPropagation()">
+      <div class="dialog-header">
+        <h2>{{ selectedItem?.title }}</h2>
+        <button mat-icon-button (click)="closeDetail()">
+          <mat-icon>close</mat-icon>
+        </button>
       </div>
-
-      @if (showEpisodeSelector) {
-        @if (loadingEpisodes) {
-          <div class="loading-episodes"><i class="pi pi-spin pi-spinner" style="font-size: 1.5rem;"></i> Loading episodes...</div>
-        }
-        <div class="episodes-selector">
-          @for (season of seasons; track season.season_number) {
-            <div class="season-block">
-              <div class="season-header">
-                <p-checkbox [(ngModel)]="season.selected" [binary]="true" (onChange)="toggleSeason(season)" />
-                <span>{{ season.name }} ({{ season.episode_count }} episodes)</span>
+      @if (selectedItem) {
+        <div class="dialog-content">
+          <div class="detail-popup">
+            <div class="detail-top">
+              <div class="detail-poster">
+                @if (selectedItem.poster_url) {
+                  <img [src]="selectedItem.poster_url" [alt]="selectedItem.title" />
+                } @else {
+                  <div class="placeholder-poster-sm"><mat-icon>image</mat-icon></div>
+                }
               </div>
-              @if (season.episodes) {
-                <div class="episodes-list">
-                  @for (ep of season.episodes; track ep.episode_number) {
-                    <div class="episode-item" (click)="onEpisodeClick($event, season, ep)">
-                      <p-checkbox [ngModel]="ep.selected" [binary]="true" class="no-pointer" />
-                      <span>E{{ ep.episode_number }} - {{ ep.name }}</span>
-                    </div>
+              <div class="detail-meta">
+                <div class="detail-badges">
+                  <span class="type-badge">{{ selectedItem.media_type === 'tv' ? 'TV Series' : 'Movie' }}</span>
+                  <span class="year-badge">{{ selectedItem.release_date | slice:0:4 }}</span>
+                  @if (selectedItem.vote_average) {
+                    <span class="rating-badge-inline"><mat-icon>star</mat-icon> {{ selectedItem.vote_average | number:'1.1-1' }}</span>
                   }
                 </div>
+                <p class="detail-overview">{{ selectedItem.overview }}</p>
+              </div>
+            </div>
+
+            @if (showEpisodeSelector) {
+              @if (loadingEpisodes) {
+                <div class="loading-episodes"><mat-spinner diameter="24"></mat-spinner> Loading episodes...</div>
+              }
+              <div class="episodes-selector">
+                @for (season of seasons; track season.season_number) {
+                  <div class="season-block">
+                    <div class="season-header">
+                      <mat-checkbox
+                        [checked]="season.selected"
+                        (change)="season.selected = $event.checked; toggleSeason(season)">
+                      </mat-checkbox>
+                      <span>{{ season.name }} ({{ season.episode_count }} episodes)</span>
+                    </div>
+                    @if (season.episodes) {
+                      <div class="episodes-list">
+                        @for (ep of season.episodes; track ep.episode_number) {
+                          <div class="episode-item" (click)="onEpisodeClick($event, season, ep)">
+                            <mat-checkbox [checked]="ep.selected" class="no-pointer" (click)="$event.preventDefault()"></mat-checkbox>
+                            <span>E{{ ep.episode_number }} - {{ ep.name }}</span>
+                          </div>
+                        }
+                      </div>
+                    }
+                  </div>
+                }
+              </div>
+            }
+
+            <div class="detail-actions">
+              @if (showEpisodeSelector) {
+                <button mat-flat-button color="primary" (click)="addSelectedEpisodes()" [disabled]="!hasSelectedEpisodes()">
+                  <mat-icon>add</mat-icon> Add Selected Episodes
+                </button>
+              } @else if (isInCatalog) {
+                <button mat-flat-button color="accent" (click)="viewInCatalog()">
+                  <mat-icon>open_in_new</mat-icon> View in Catalog
+                </button>
+                <button mat-stroked-button (click)="removeFromCatalog()">
+                  <mat-icon>delete</mat-icon> Remove from Catalog
+                </button>
+              } @else {
+                <button mat-flat-button color="primary" (click)="addToCatalog()">
+                  <mat-icon>add</mat-icon> {{ selectedItem.media_type === 'tv' ? 'Select Episodes' : 'Add to Catalog' }}
+                </button>
               }
             </div>
-          }
+          </div>
         </div>
       }
-
-      <div class="detail-actions">
-        @if (showEpisodeSelector) {
-          <p-button label="Add Selected Episodes" icon="pi pi-plus" severity="danger" (onClick)="addSelectedEpisodes()" [disabled]="!hasSelectedEpisodes()" />
-        } @else if (isInCatalog) {
-          <p-button label="View in Catalog" icon="pi pi-external-link" severity="info" (onClick)="viewInCatalog()" />
-          <p-button label="Remove from Catalog" icon="pi pi-trash" severity="secondary" [outlined]="true" (onClick)="removeFromCatalog()" />
-        } @else {
-          <p-button [label]="selectedItem.media_type === 'tv' ? 'Select Episodes' : 'Add to Catalog'" icon="pi pi-plus" severity="danger" (onClick)="addToCatalog()" />
-        }
-      </div>
     </div>
-  }
-</p-dialog>
+  </div>
+}

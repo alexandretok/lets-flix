@@ -2,23 +2,22 @@ import { Component, inject, OnInit, OnDestroy, ChangeDetectorRef } from '@angula
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { Button } from 'primeng/button';
-import { Tag } from 'primeng/tag';
-import { ProgressBarModule } from 'primeng/progressbar';
-import { Select } from 'primeng/select';
-import { Toast } from 'primeng/toast';
-import { Dialog } from 'primeng/dialog';
-import { MessageService } from 'primeng/api';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatSelectModule } from '@angular/material/select';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { ApiService } from '../../services/api.service';
 import { SSEService } from '../../services/sse.service';
+import { NotificationService } from '../../services/notification.service';
 import { getLanguageOptions } from '../../shared/languages';
 import { EpisodeSelectorComponent, EpisodeSaveResult } from '../../components/episode-selector/episode-selector.component';
 import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-content-details',
-  imports: [CommonModule, FormsModule, Button, Tag, ProgressBarModule, Select, Toast, Dialog, EpisodeSelectorComponent],
-  providers: [MessageService],
+  imports: [CommonModule, FormsModule, MatButtonModule, MatIconModule, MatProgressBarModule, MatFormFieldModule, MatSelectModule, MatTooltipModule, EpisodeSelectorComponent],
   templateUrl: './content-details.component.html',
   styleUrl: './content-details.component.scss',
 })
@@ -27,7 +26,7 @@ export class ContentDetailsComponent implements OnInit, OnDestroy {
   private router = inject(Router);
   private api = inject(ApiService);
   private sseService = inject(SSEService);
-  private messageService = inject(MessageService);
+  private notify = inject(NotificationService);
   private cdr = inject(ChangeDetectorRef);
   private sseSub?: Subscription;
 
@@ -39,10 +38,8 @@ export class ContentDetailsComponent implements OnInit, OnDestroy {
   selectedLanguage = '';
   groupedEpisodes: { number: number; episodes: any[] }[] = [];
 
-  // Episode selector
   showEpisodeSelector = false;
 
-  // Episode subtitle dialog
   showEpisodeSubDialog = false;
   selectedEpisodeForSub: any = null;
   episodeSubtitles: any[] = [];
@@ -108,11 +105,11 @@ export class ContentDetailsComponent implements OnInit, OnDestroy {
     this.api.startDownload(this.media.id).subscribe({
       next: () => {
         this.media.status = 'downloading';
-        this.messageService.add({ severity: 'success', summary: 'Started', detail: 'Download started' });
+        this.notify.success('Download started');
         this.cdr.detectChanges();
       },
       error: (err) => {
-        this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error?.error || 'Failed' });
+        this.notify.error(err.error?.error || 'Failed');
         this.cdr.detectChanges();
       }
     });
@@ -121,11 +118,11 @@ export class ContentDetailsComponent implements OnInit, OnDestroy {
   startEpisodeDownload(episodeId: number): void {
     this.api.startDownload(this.media.id, episodeId).subscribe({
       next: () => {
-        this.messageService.add({ severity: 'success', summary: 'Started', detail: 'Episode download started' });
+        this.notify.success('Episode download started');
         this.loadMedia(this.media.id);
       },
       error: (err) => {
-        this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error?.error || 'Failed' });
+        this.notify.error(err.error?.error || 'Failed');
         this.cdr.detectChanges();
       }
     });
@@ -134,7 +131,7 @@ export class ContentDetailsComponent implements OnInit, OnDestroy {
   retrySearch(): void {
     this.api.retryDownload(this.media.id).subscribe({
       next: () => {
-        this.messageService.add({ severity: 'info', summary: 'Retrying', detail: 'Searching for torrents...' });
+        this.notify.info('Searching for torrents...');
         this.loadMedia(this.media.id);
       }
     });
@@ -143,7 +140,7 @@ export class ContentDetailsComponent implements OnInit, OnDestroy {
   retryEpisodeSearch(episodeId: number): void {
     this.api.retryDownload(this.media.id, episodeId).subscribe({
       next: () => {
-        this.messageService.add({ severity: 'info', summary: 'Retrying', detail: 'Searching for episode...' });
+        this.notify.info('Searching for episode...');
         this.loadMedia(this.media.id);
       }
     });
@@ -152,11 +149,11 @@ export class ContentDetailsComponent implements OnInit, OnDestroy {
   removeFromCatalog(): void {
     this.api.removeFromCatalog(this.media.id).subscribe({
       next: () => {
-        this.messageService.add({ severity: 'success', summary: 'Removed', detail: `${this.media.title} removed from catalog` });
+        this.notify.success(`${this.media.title} removed from catalog`);
         this.router.navigate(['/browse']);
       },
       error: (err) => {
-        this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error?.error || 'Failed to remove' });
+        this.notify.error(err.error?.error || 'Failed to remove');
         this.cdr.detectChanges();
       }
     });
@@ -165,11 +162,11 @@ export class ContentDetailsComponent implements OnInit, OnDestroy {
   removeEpisode(episodeId: number): void {
     this.api.removeEpisode(episodeId).subscribe({
       next: () => {
-        this.messageService.add({ severity: 'success', summary: 'Removed', detail: 'Episode removed' });
+        this.notify.success('Episode removed');
         this.loadMedia(this.media.id);
       },
       error: (err) => {
-        this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error?.error || 'Failed to remove' });
+        this.notify.error(err.error?.error || 'Failed to remove');
       }
     });
   }
@@ -182,7 +179,6 @@ export class ContentDetailsComponent implements OnInit, OnDestroy {
     this.router.navigate(['/watch', `ep-${episodeId}`]);
   }
 
-  // Movie subtitles
   downloadSubtitle(): void {
     if (!this.selectedLanguage) return;
     this.api.searchSubtitles(this.media.id, this.selectedLanguage).subscribe({
@@ -190,19 +186,18 @@ export class ContentDetailsComponent implements OnInit, OnDestroy {
         if (res.results.length > 0) {
           this.api.downloadSubtitle(res.results[0].fileId, this.media.id, this.selectedLanguage).subscribe({
             next: () => {
-              this.messageService.add({ severity: 'success', summary: 'Downloaded', detail: `Subtitle (${this.selectedLanguage}) downloaded` });
+              this.notify.success(`Subtitle (${this.selectedLanguage}) downloaded`);
               this.loadSubtitles();
             }
           });
         } else {
-          this.messageService.add({ severity: 'warn', summary: 'Not Found', detail: 'No subtitles found for this language' });
+          this.notify.warn('No subtitles found for this language');
         }
         this.cdr.detectChanges();
       }
     });
   }
 
-  // Episode subtitles
   openEpisodeSubtitleDialog(ep: any): void {
     this.selectedEpisodeForSub = ep;
     this.episodeSubtitles = [];
@@ -217,6 +212,10 @@ export class ContentDetailsComponent implements OnInit, OnDestroy {
     });
   }
 
+  closeEpisodeSubDialog(): void {
+    this.showEpisodeSubDialog = false;
+  }
+
   downloadEpisodeSubtitle(): void {
     if (!this.selectedLanguage || !this.selectedEpisodeForSub) return;
     this.api.searchSubtitles(this.media.id, this.selectedLanguage).subscribe({
@@ -224,7 +223,7 @@ export class ContentDetailsComponent implements OnInit, OnDestroy {
         if (res.results.length > 0) {
           this.api.downloadSubtitle(res.results[0].fileId, this.media.id, this.selectedLanguage, this.selectedEpisodeForSub.id).subscribe({
             next: () => {
-              this.messageService.add({ severity: 'success', summary: 'Downloaded', detail: `Subtitle (${this.selectedLanguage}) downloaded` });
+              this.notify.success(`Subtitle (${this.selectedLanguage}) downloaded`);
               this.api.getEpisodeSubtitles(this.selectedEpisodeForSub.id).subscribe({
                 next: (subRes) => {
                   this.episodeSubtitles = subRes.subtitles;
@@ -234,14 +233,13 @@ export class ContentDetailsComponent implements OnInit, OnDestroy {
             }
           });
         } else {
-          this.messageService.add({ severity: 'warn', summary: 'Not Found', detail: 'No subtitles found for this language' });
+          this.notify.warn('No subtitles found for this language');
         }
         this.cdr.detectChanges();
       }
     });
   }
 
-  // Episode selector
   openAddEpisodesDialog(): void {
     this.showEpisodeSelector = true;
   }
@@ -250,7 +248,7 @@ export class ContentDetailsComponent implements OnInit, OnDestroy {
     const parts: string[] = [];
     if (result.added > 0) parts.push(`${result.added} added`);
     if (result.removed > 0) parts.push(`${result.removed} removed`);
-    this.messageService.add({ severity: 'success', summary: 'Updated', detail: `Episodes: ${parts.join(', ')}` });
+    this.notify.success(`Episodes: ${parts.join(', ')}`);
     this.loadMedia(this.media.id);
   }
 
@@ -271,14 +269,14 @@ export class ContentDetailsComponent implements OnInit, OnDestroy {
     return map[status] || status;
   }
 
-  getStatusSeverity(status: string): 'success' | 'info' | 'warn' | 'danger' | 'secondary' {
-    const map: Record<string, any> = {
-      downloaded: 'success',
-      downloading: 'info',
-      pending: 'warn',
-      searching: 'info',
-      not_found: 'danger',
+  getStatusClass(status: string): string {
+    const map: Record<string, string> = {
+      downloaded: 'tag-success',
+      downloading: 'tag-info',
+      pending: 'tag-warn',
+      searching: 'tag-info',
+      not_found: 'tag-danger',
     };
-    return map[status] || 'secondary';
+    return map[status] || 'tag-secondary';
   }
 }
