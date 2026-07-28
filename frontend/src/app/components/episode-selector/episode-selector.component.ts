@@ -7,11 +7,8 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { ApiService } from '../../services/api.service';
-
-export interface EpisodeSaveResult {
-  added: number;
-  removed: number;
-}
+import { EpisodeSaveResult } from '../../types';
+export type { EpisodeSaveResult } from '../../types';
 
 @Component({
   selector: 'app-episode-selector',

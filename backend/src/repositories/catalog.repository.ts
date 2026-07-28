@@ -1,17 +1,6 @@
 import { getDb } from '../database/init.js';
-import { Media } from './media.repository.js';
-
-export interface UserCatalog {
-  id: number;
-  user_id: number;
-  media_id: number;
-  added_at: string;
-}
-
-export interface CatalogMediaItem extends Media {
-  added_at: string;
-  last_watched_at: string | null;
-}
+import { CatalogMediaItem, UserCatalog } from '../types/index.js';
+export type { UserCatalog, CatalogMediaItem } from '../types/index.js';
 
 export const catalogRepository = {
   findByUser(userId: number): CatalogMediaItem[] {

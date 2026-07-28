@@ -1,9 +1,6 @@
 import { getDb } from '../database/init.js';
-
-export interface Setting {
-  key: string;
-  value: string;
-}
+import { Setting } from '../types/index.js';
+export type { Setting } from '../types/index.js';
 
 export const settingsRepository = {
   get(key: string): string | undefined {

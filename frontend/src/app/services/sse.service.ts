@@ -1,14 +1,8 @@
 import { Injectable, inject, NgZone } from '@angular/core';
 import { Subject } from 'rxjs';
 import { AuthStore } from '../stores/auth.store';
-
-export interface DownloadEvent {
-  mediaId: number;
-  episodeId?: number;
-  progress: number;
-  downloadSpeed: number;
-  status: string;
-}
+import { DownloadEvent } from '../types';
+export type { DownloadEvent } from '../types';
 
 @Injectable({ providedIn: 'root' })
 export class SSEService {

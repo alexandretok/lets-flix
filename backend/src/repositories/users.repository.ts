@@ -1,15 +1,6 @@
 import { getDb } from '../database/init.js';
-
-export interface User {
-  id: number;
-  username: string;
-  password_hash: string;
-  role: 'admin' | 'user';
-  requires_password_change: number;
-  created_at: string;
-}
-
-export type UserPublic = Omit<User, 'password_hash'>;
+import { User, UserPublic } from '../types/index.js';
+export type { User, UserPublic } from '../types/index.js';
 
 export const usersRepository = {
   findById(id: number): User | undefined {

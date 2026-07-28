@@ -1,14 +1,6 @@
 import { getDb } from '../database/init.js';
-
-export interface WatchProgress {
-  id: number;
-  user_id: number;
-  media_id: number | null;
-  episode_id: number | null;
-  stopped_at_seconds: number;
-  is_watched: number;
-  updated_at: string;
-}
+import { WatchProgress } from '../types/index.js';
+export type { WatchProgress } from '../types/index.js';
 
 export const watchProgressRepository = {
   findByUserAndMedia(userId: number, mediaId: number): WatchProgress | undefined {

@@ -1,13 +1,8 @@
 import { computed, inject } from '@angular/core';
 import { signalStore, withState, withComputed, withMethods, patchState } from '@ngrx/signals';
 import { Router } from '@angular/router';
-
-export interface AuthUser {
-  id: number;
-  username: string;
-  role: 'admin' | 'user';
-  requires_password_change: boolean;
-}
+import { AuthUser } from '../types';
+export type { AuthUser } from '../types';
 
 interface AuthState {
   token: string | null;

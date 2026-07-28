@@ -1,18 +1,7 @@
 import { getDb } from '../database/init.js';
 
-export interface Media {
-  id: number;
-  tmdb_id: number;
-  type: 'movie' | 'series';
-  title: string;
-  poster_url: string | null;
-  overview: string | null;
-  status: 'pending' | 'searching' | 'downloading' | 'downloaded' | 'not_found';
-  disk_path: string | null;
-  duration: number | null;
-  downloaded_at: string | null;
-  created_at: string;
-}
+import { Media } from '../types/index.js';
+export type { Media } from '../types/index.js';
 
 export const mediaRepository = {
   findById(id: number): Media | undefined {

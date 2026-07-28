@@ -1,44 +1,9 @@
 import { config } from '../config/env.js';
+import { TmdbSearchResult, TmdbMovieDetails, TmdbSeriesDetails, TmdbEpisode } from '../types/index.js';
+export type { TmdbSearchResult, TmdbMovieDetails, TmdbSeriesDetails, TmdbEpisode } from '../types/index.js';
 
 const TMDB_BASE_URL = 'https://api.themoviedb.org/3';
 const TMDB_IMAGE_BASE = 'https://image.tmdb.org/t/p/w500';
-
-export interface TmdbSearchResult {
-  id: number;
-  media_type: 'movie' | 'tv';
-  title: string;
-  overview: string;
-  poster_url: string | null;
-  release_date: string;
-  vote_average: number;
-}
-
-export interface TmdbMovieDetails {
-  id: number;
-  title: string;
-  overview: string;
-  poster_url: string | null;
-  release_date: string;
-  runtime: number;
-  vote_average: number;
-}
-
-export interface TmdbSeriesDetails {
-  id: number;
-  name: string;
-  overview: string;
-  poster_url: string | null;
-  first_air_date: string;
-  vote_average: number;
-  number_of_seasons: number;
-  seasons: { season_number: number; episode_count: number; name: string }[];
-}
-
-export interface TmdbEpisode {
-  episode_number: number;
-  name: string;
-  overview: string;
-}
 
 function posterUrl(path: string | null): string | null {
   return path ? `${TMDB_IMAGE_BASE}${path}` : null;

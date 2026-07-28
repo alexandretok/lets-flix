@@ -6,14 +6,8 @@ import { subtitlesRepository } from '../repositories/subtitles.repository.js';
 import { mediaRepository } from '../repositories/media.repository.js';
 import { episodesRepository } from '../repositories/episodes.repository.js';
 import { settingsRepository } from '../repositories/settings.repository.js';
-
-export interface SubtitleSearchResult {
-  id: string;
-  language: string;
-  release: string;
-  fileId: number;
-  fileName: string;
-}
+import { SubtitleSearchResult } from '../types/index.js';
+export type { SubtitleSearchResult } from '../types/index.js';
 
 export const subtitlesService = {
   async searchSubtitles(tmdbId: number, language: string, type: string, season?: number, episode?: number): Promise<SubtitleSearchResult[]> {

@@ -1,11 +1,6 @@
 import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
-
-export interface JwtPayload {
-  userId: number;
-  username: string;
-  role: 'admin' | 'user';
-  requires_password_change: boolean;
-}
+import { JwtPayload } from '../types/index.js';
+export type { JwtPayload } from '../types/index.js';
 
 declare module '@fastify/jwt' {
   interface FastifyJWT {

@@ -6,36 +6,8 @@ import { episodesRepository } from '../repositories/episodes.repository.js';
 import { storageService } from './storage.service.js';
 import { indexerService } from './indexer.service.js';
 import { EventEmitter } from 'events';
-
-export interface DownloadProgress {
-  mediaId: number;
-  episodeId?: number;
-  progress: number;
-  downloadSpeed: number;
-  status: string;
-}
-
-export interface TorrentInfo {
-  key: string;
-  mediaId: number;
-  episodeId?: number;
-  mediaTitle: string;
-  name: string;
-  progress: number;
-  downloadSpeed: number;
-  uploadSpeed: number;
-  downloaded: number;
-  uploaded: number;
-  size: number;
-  numPeers: number;
-  numSeeds: number;
-  ratio: number;
-  timeRemaining: number;
-  paused: boolean;
-  done: boolean;
-  infoHash: string;
-  path: string;
-}
+import { DownloadProgress, TorrentInfo } from '../types/index.js';
+export type { DownloadProgress, TorrentInfo } from '../types/index.js';
 
 class DownloadService extends EventEmitter {
   private activeDownloads: Map<string, { progress: number; speed: number }> = new Map();

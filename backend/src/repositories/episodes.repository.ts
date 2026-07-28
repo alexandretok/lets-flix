@@ -1,16 +1,6 @@
 import { getDb } from '../database/init.js';
-
-export interface Episode {
-  id: number;
-  media_id: number;
-  season_number: number;
-  episode_number: number;
-  title: string | null;
-  status: 'pending' | 'searching' | 'downloading' | 'downloaded' | 'not_found';
-  disk_path: string | null;
-  downloaded_at: string | null;
-  created_at: string;
-}
+import { Episode } from '../types/index.js';
+export type { Episode } from '../types/index.js';
 
 export const episodesRepository = {
   findById(id: number): Episode | undefined {

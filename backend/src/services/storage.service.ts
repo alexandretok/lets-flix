@@ -4,13 +4,8 @@ import path from 'path';
 import { config } from '../config/env.js';
 import { mediaRepository } from '../repositories/media.repository.js';
 import { watchProgressRepository } from '../repositories/watch-progress.repository.js';
-
-export interface DiskUsage {
-  total: number;
-  used: number;
-  free: number;
-  percentage: number;
-}
+import { DiskUsage } from '../types/index.js';
+export type { DiskUsage } from '../types/index.js';
 
 export const storageService = {
   getDiskUsage(): DiskUsage {

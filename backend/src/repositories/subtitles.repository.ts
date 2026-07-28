@@ -1,13 +1,6 @@
 import { getDb } from '../database/init.js';
-
-export interface Subtitle {
-  id: number;
-  media_id: number | null;
-  episode_id: number | null;
-  language_code: string;
-  disk_path: string;
-  created_at: string;
-}
+import { Subtitle } from '../types/index.js';
+export type { Subtitle } from '../types/index.js';
 
 export const subtitlesRepository = {
   findById(id: number): Subtitle | undefined {

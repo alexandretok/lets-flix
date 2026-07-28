@@ -1,13 +1,7 @@
 import { config } from '../config/env.js';
 import { settingsRepository } from '../repositories/settings.repository.js';
-
-export interface TorrentResult {
-  title: string;
-  magnetUri: string;
-  size: number;
-  seeders: number;
-  leechers: number;
-}
+import { TorrentResult } from '../types/index.js';
+export type { TorrentResult } from '../types/index.js';
 
 export const indexerService = {
   async searchTorrents(title: string, year?: string, type?: string): Promise<TorrentResult[]> {
