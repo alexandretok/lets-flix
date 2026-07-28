@@ -8,7 +8,6 @@ import { ProgressBarModule } from 'primeng/progressbar';
 import { Select } from 'primeng/select';
 import { Toast } from 'primeng/toast';
 import { MessageService } from 'primeng/api';
-import { LayoutComponent } from '../../layout/layout.component';
 import { ApiService } from '../../services/api.service';
 import { SSEService, DownloadEvent } from '../../services/sse.service';
 import { getLanguageOptions } from '../../shared/languages';
@@ -16,7 +15,7 @@ import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-content-details',
-  imports: [CommonModule, FormsModule, Button, Tag, ProgressBarModule, Select, Toast, LayoutComponent],
+  imports: [CommonModule, FormsModule, Button, Tag, ProgressBarModule, Select, Toast],
   providers: [MessageService],
   templateUrl: './content-details.component.html',
   styleUrl: './content-details.component.scss',

@@ -3,12 +3,11 @@ import { Router, RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { Tag } from 'primeng/tag';
 import { Button } from 'primeng/button';
-import { LayoutComponent } from '../../layout/layout.component';
 import { ApiService } from '../../services/api.service';
 
 @Component({
   selector: 'app-browse',
-  imports: [CommonModule, RouterLink, Tag, Button, LayoutComponent],
+  imports: [CommonModule, RouterLink, Tag, Button],
   templateUrl: './browse.component.html',
   styleUrl: './browse.component.scss',
 })

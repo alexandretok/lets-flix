@@ -1,5 +1,5 @@
 import { Component, inject, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
-import { RouterLink, RouterLinkActive, Router } from '@angular/router';
+import { RouterLink, RouterLinkActive, RouterOutlet, Router } from '@angular/router';
 import { Button } from 'primeng/button';
 import { ProgressBarModule } from 'primeng/progressbar';
 import { AuthStore } from '../stores/auth.store';
@@ -9,7 +9,7 @@ import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-layout',
-  imports: [CommonModule, RouterLink, RouterLinkActive, Button, ProgressBarModule],
+  imports: [CommonModule, RouterLink, RouterLinkActive, RouterOutlet, Button, ProgressBarModule],
   templateUrl: './layout.component.html',
   styleUrl: './layout.component.scss',
 })

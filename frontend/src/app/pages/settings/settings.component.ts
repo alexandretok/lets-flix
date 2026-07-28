@@ -6,13 +6,12 @@ import { ToggleSwitch } from 'primeng/toggleswitch';
 import { Button } from 'primeng/button';
 import { Toast } from 'primeng/toast';
 import { MessageService } from 'primeng/api';
-import { LayoutComponent } from '../../layout/layout.component';
 import { ApiService } from '../../services/api.service';
 import { getLanguageOptions } from '../../shared/languages';
 
 @Component({
   selector: 'app-settings',
-  imports: [CommonModule, FormsModule, MultiSelect, ToggleSwitch, Button, Toast, LayoutComponent],
+  imports: [CommonModule, FormsModule, MultiSelect, ToggleSwitch, Button, Toast],
   providers: [MessageService],
   templateUrl: './settings.component.html',
   styleUrl: './settings.component.scss',

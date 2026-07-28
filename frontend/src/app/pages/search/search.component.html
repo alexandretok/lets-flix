@@ -1,96 +1,94 @@
-<app-layout>
-  <p-toast />
-  <div class="search-header">
-    <h1>Search</h1>
+<p-toast />
+<div class="search-header">
+  <h1>Search</h1>
+</div>
+<div class="search-input-wrapper">
+  <div class="search-bar">
+    <input pInputText [(ngModel)]="query" placeholder="Search movies and series..." class="search-input" (keydown.enter)="performSearch()" />
+    <p-button icon="pi pi-search" severity="danger" (onClick)="performSearch()" [loading]="loading" />
   </div>
-  <div class="search-input-wrapper">
-    <div class="search-bar">
-      <input pInputText [(ngModel)]="query" placeholder="Search movies and series..." class="search-input" (keydown.enter)="performSearch()" />
-      <p-button icon="pi pi-search" severity="danger" (onClick)="performSearch()" [loading]="loading" />
-    </div>
-  </div>
+</div>
 
-  @if (loading) {
-    <div class="loading"><i class="pi pi-spin pi-spinner" style="font-size: 2rem;"></i></div>
-  }
+@if (loading) {
+  <div class="loading"><i class="pi pi-spin pi-spinner" style="font-size: 2rem;"></i></div>
+}
 
-  <div class="results-grid">
-    @for (item of results; track item.id) {
-      <div class="result-card" [class.expanded]="item._expanded">
-        <div class="poster" [class.poster-expanded]="item._expanded">
-          @if (item.poster_url) {
-            <img [src]="item.poster_url" [alt]="item.title" (click)="openImagePreview(item.poster_url, $event)" />
-          } @else {
-            <div class="placeholder-poster"><i class="pi pi-image"></i></div>
-          }
-        </div>
-        <div class="result-info">
-          <div class="result-header" (click)="item._expanded = !item._expanded">
-            <div class="result-title-row">
-              <h4>{{ item.title }}</h4>
-              @if (item.vote_average) {
-                <span class="rating"><i class="pi pi-star-fill"></i> {{ item.vote_average | number:'1.1-1' }}</span>
-              }
-            </div>
-            <span class="meta">{{ item.media_type === 'tv' ? 'Series' : 'Movie' }} · {{ item.release_date | slice:0:4 }}</span>
-            <i class="pi expand-icon" [class.pi-chevron-down]="!item._expanded" [class.pi-chevron-up]="item._expanded"></i>
-          </div>
-          @if (!item._expanded) {
-            <p class="overview">{{ item.overview | slice:0:100 }}{{ item.overview?.length > 100 ? '...' : '' }}</p>
-          }
-          @if (item._expanded) {
-            <p class="overview-full">{{ item.overview }}</p>
-            <div class="expanded-details">
-              <span class="detail-item"><i class="pi pi-calendar"></i> {{ item.release_date }}</span>
-              @if (item.vote_average) {
-                <span class="detail-item"><i class="pi pi-star-fill"></i> {{ item.vote_average | number:'1.1-1' }} / 10</span>
-              }
-              <span class="detail-item"><i class="pi pi-tag"></i> {{ item.media_type === 'tv' ? 'TV Series' : 'Movie' }}</span>
-            </div>
-          }
-          <div class="result-actions">
-            @if (item.media_type === 'tv') {
-              <p-button label="Select Episodes" icon="pi pi-list" size="small" severity="danger" (onClick)="openSeriesDialog(item)" />
-            } @else {
-              <p-button label="Add to Catalog" icon="pi pi-plus" size="small" severity="danger" (onClick)="addMovie(item)" />
-            }
-          </div>
-        </div>
-      </div>
-    }
-  </div>
-
-  @if (previewImageUrl) {
-    <div class="image-overlay" (click)="closeImagePreview()">
-      <img [src]="previewImageUrl" class="preview-image" />
-    </div>
-  }
-
-  <p-dialog header="Select Episodes" [(visible)]="showSeriesDialog" [modal]="true" [style]="{width: '500px'}" [draggable]="false">
-    @if (selectedSeries) {
-      <div class="episodes-selector">
-        @for (season of seasons; track season.season_number) {
-          <div class="season-block">
-            <div class="season-header">
-              <p-checkbox [(ngModel)]="season.selected" [binary]="true" (onChange)="toggleSeason(season)" />
-              <span>{{ season.name }} ({{ season.episode_count }} episodes)</span>
-            </div>
-            @if (season.episodes) {
-              <div class="episodes-list">
-                @for (ep of season.episodes; track ep.episode_number) {
-                  <div class="episode-item" (click)="onEpisodeClick($event, season, ep)">
-                    <p-checkbox [ngModel]="ep.selected" [binary]="true" class="no-pointer" />
-                    <span>E{{ ep.episode_number }} - {{ ep.name }}</span>
-                  </div>
-                }
-              </div>
-            }
-          </div>
+<div class="results-grid">
+  @for (item of results; track item.id) {
+    <div class="result-card" [class.expanded]="item._expanded">
+      <div class="poster" [class.poster-expanded]="item._expanded">
+        @if (item.poster_url) {
+          <img [src]="item.poster_url" [alt]="item.title" (click)="openImagePreview(item.poster_url, $event)" />
+        } @else {
+          <div class="placeholder-poster"><i class="pi pi-image"></i></div>
         }
       </div>
-      <div class="dialog-footer">
-        <p-button label="Add Selected" icon="pi pi-plus" severity="danger" (onClick)="addSelectedEpisodes()" [disabled]="!hasSelectedEpisodes()" />
+      <div class="result-info">
+        <div class="result-header" (click)="item._expanded = !item._expanded">
+          <div class="result-title-row">
+            <h4>{{ item.title }}</h4>
+            @if (item.vote_average) {
+              <span class="rating"><i class="pi pi-star-fill"></i> {{ item.vote_average | number:'1.1-1' }}</span>
+            }
+          </div>
+          <span class="meta">{{ item.media_type === 'tv' ? 'Series' : 'Movie' }} · {{ item.release_date | slice:0:4 }}</span>
+          <i class="pi expand-icon" [class.pi-chevron-down]="!item._expanded" [class.pi-chevron-up]="item._expanded"></i>
+        </div>
+        @if (!item._expanded) {
+          <p class="overview">{{ item.overview | slice:0:100 }}{{ item.overview?.length > 100 ? '...' : '' }}</p>
+        }
+        @if (item._expanded) {
+          <p class="overview-full">{{ item.overview }}</p>
+          <div class="expanded-details">
+            <span class="detail-item"><i class="pi pi-calendar"></i> {{ item.release_date }}</span>
+            @if (item.vote_average) {
+              <span class="detail-item"><i class="pi pi-star-fill"></i> {{ item.vote_average | number:'1.1-1' }} / 10</span>
+            }
+            <span class="detail-item"><i class="pi pi-tag"></i> {{ item.media_type === 'tv' ? 'TV Series' : 'Movie' }}</span>
+          </div>
+        }
+        <div class="result-actions">
+          @if (item.media_type === 'tv') {
+            <p-button label="Select Episodes" icon="pi pi-list" size="small" severity="danger" (onClick)="openSeriesDialog(item)" />
+          } @else {
+            <p-button label="Add to Catalog" icon="pi pi-plus" size="small" severity="danger" (onClick)="addMovie(item)" />
+          }
+        </div>
       </div>
-    }
-  </p-dialog>
-</app-layout>
+    </div>
+  }
+</div>
+
+@if (previewImageUrl) {
+  <div class="image-overlay" (click)="closeImagePreview()">
+    <img [src]="previewImageUrl" class="preview-image" />
+  </div>
+}
+
+<p-dialog header="Select Episodes" [(visible)]="showSeriesDialog" [modal]="true" [style]="{width: '500px'}" [draggable]="false">
+  @if (selectedSeries) {
+    <div class="episodes-selector">
+      @for (season of seasons; track season.season_number) {
+        <div class="season-block">
+          <div class="season-header">
+            <p-checkbox [(ngModel)]="season.selected" [binary]="true" (onChange)="toggleSeason(season)" />
+            <span>{{ season.name }} ({{ season.episode_count }} episodes)</span>
+          </div>
+          @if (season.episodes) {
+            <div class="episodes-list">
+              @for (ep of season.episodes; track ep.episode_number) {
+                <div class="episode-item" (click)="onEpisodeClick($event, season, ep)">
+                  <p-checkbox [ngModel]="ep.selected" [binary]="true" class="no-pointer" />
+                  <span>E{{ ep.episode_number }} - {{ ep.name }}</span>
+                </div>
+              }
+            </div>
+          }
+        </div>
+      }
+    </div>
+    <div class="dialog-footer">
+      <p-button label="Add Selected" icon="pi pi-plus" severity="danger" (onClick)="addSelectedEpisodes()" [disabled]="!hasSelectedEpisodes()" />
+    </div>
+  }
+</p-dialog>

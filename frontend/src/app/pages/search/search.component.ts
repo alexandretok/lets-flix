@@ -7,12 +7,11 @@ import { Dialog } from 'primeng/dialog';
 import { Toast } from 'primeng/toast';
 import { Checkbox } from 'primeng/checkbox';
 import { MessageService } from 'primeng/api';
-import { LayoutComponent } from '../../layout/layout.component';
 import { ApiService } from '../../services/api.service';
 
 @Component({
   selector: 'app-search',
-  imports: [CommonModule, FormsModule, InputText, Button, Dialog, Toast, Checkbox, LayoutComponent],
+  imports: [CommonModule, FormsModule, InputText, Button, Dialog, Toast, Checkbox],
   providers: [MessageService],
   templateUrl: './search.component.html',
   styleUrl: './search.component.scss',

@@ -8,13 +8,12 @@ import { Toast } from 'primeng/toast';
 import { TableModule } from 'primeng/table';
 import { Dialog } from 'primeng/dialog';
 import { MessageService } from 'primeng/api';
-import { LayoutComponent } from '../../layout/layout.component';
 import { ApiService } from '../../services/api.service';
 import { AuthStore } from '../../stores/auth.store';
 
 @Component({
   selector: 'app-users',
-  imports: [CommonModule, FormsModule, InputText, Button, Select, Toast, TableModule, Dialog, LayoutComponent],
+  imports: [CommonModule, FormsModule, InputText, Button, Select, Toast, TableModule, Dialog],
   providers: [MessageService],
   templateUrl: './users.component.html',
   styleUrl: './users.component.scss',
