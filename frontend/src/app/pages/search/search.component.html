@@ -65,30 +65,10 @@
   </div>
 }
 
-<p-dialog header="Manage Episodes" [(visible)]="showSeriesDialog" [modal]="true" [style]="{width: '500px'}" [draggable]="false">
-  @if (selectedSeries) {
-    <div class="episodes-selector">
-      @for (season of seasons; track season.season_number) {
-        <div class="season-block">
-          <div class="season-header">
-            <p-checkbox [(ngModel)]="season.selected" [binary]="true" (onChange)="toggleSeason(season)" />
-            <span>{{ season.name }} ({{ season.episode_count }} episodes)</span>
-          </div>
-          @if (season.episodes) {
-            <div class="episodes-list">
-              @for (ep of season.episodes; track ep.episode_number) {
-                <div class="episode-item" (click)="onEpisodeClick($event, season, ep)">
-                  <p-checkbox [ngModel]="ep.selected" [binary]="true" class="no-pointer" />
-                  <span>E{{ ep.episode_number }} - {{ ep.name }}</span>
-                </div>
-              }
-            </div>
-          }
-        </div>
-      }
-    </div>
-    <div class="dialog-footer">
-      <p-button label="Save Changes" icon="pi pi-check" severity="danger" (onClick)="saveEpisodeChanges()" [disabled]="!hasEpisodeChanges()" />
-    </div>
-  }
-</p-dialog>
+<app-episode-selector
+  [(visible)]="showSeriesDialog"
+  [tmdbId]="episodeSelectorTmdbId"
+  [mediaId]="episodeSelectorMediaId"
+  [existingEpisodes]="episodeSelectorExisting"
+  (saved)="onEpisodesSaved($event)"
+/>

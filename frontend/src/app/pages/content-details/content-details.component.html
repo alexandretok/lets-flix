@@ -59,7 +59,7 @@
       <div class="episodes-section">
         <div class="episodes-header">
           <h2>Episodes</h2>
-          <p-button label="Add Episodes" icon="pi pi-plus" size="small" severity="danger" (onClick)="openAddEpisodesDialog()" />
+          <p-button label="Manage Episodes" icon="pi pi-pencil" size="small" severity="danger" (onClick)="openAddEpisodesDialog()" />
         </div>
         @for (season of groupedEpisodes; track season.number) {
           <div class="season-group">
@@ -91,34 +91,13 @@
   </div>
 }
 
-<p-dialog header="Manage Episodes" [(visible)]="showAddEpisodesDialog" [modal]="true" [style]="{width: '500px'}" [draggable]="false">
-  @if (loadingTmdbSeasons) {
-    <div class="loading-spinner"><i class="pi pi-spin pi-spinner" style="font-size: 1.5rem;"></i> Loading...</div>
-  }
-  <div class="episodes-selector">
-    @for (season of tmdbSeasons; track season.season_number) {
-      <div class="season-block">
-        <div class="season-header">
-          <p-checkbox [(ngModel)]="season.selected" [binary]="true" (onChange)="toggleAddSeason(season)" />
-          <span>{{ season.name }} ({{ season.episode_count }} episodes)</span>
-        </div>
-        @if (season.episodes) {
-          <div class="episodes-list-add">
-            @for (ep of season.episodes; track ep.episode_number) {
-              <div class="episode-item-add" (click)="onAddEpisodeClick($event, season, ep)">
-                <p-checkbox [ngModel]="ep.selected" [binary]="true" class="no-pointer" />
-                <span>E{{ ep.episode_number }} - {{ ep.name }}</span>
-              </div>
-            }
-          </div>
-        }
-      </div>
-    }
-  </div>
-  <div class="dialog-footer">
-    <p-button label="Save Changes" icon="pi pi-check" severity="danger" (onClick)="saveEpisodeChanges()" [disabled]="!hasEpisodeChanges()" />
-  </div>
-</p-dialog>
+<app-episode-selector
+  [(visible)]="showEpisodeSelector"
+  [tmdbId]="media?.tmdb_id"
+  [mediaId]="media?.id"
+  [existingEpisodes]="episodes"
+  (saved)="onEpisodesSaved($event)"
+/>
 
 <p-dialog [header]="'Subtitles - E' + selectedEpisodeForSub?.episode_number" [(visible)]="showEpisodeSubDialog" [modal]="true" [style]="{width: '400px'}" [draggable]="false">
   @if (selectedEpisodeForSub) {

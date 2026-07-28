@@ -75,35 +75,3 @@
   border-radius: 12px;
   box-shadow: 0 20px 60px rgba(0,0,0,0.5);
 }
-.episodes-selector { max-height: 50vh; overflow-y: auto; }
-.season-block { margin-bottom: 1rem; }
-.season-header {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-weight: bold;
-  color: #e0e0e0;
-  margin-bottom: 0.5rem;
-}
-.episodes-list { padding-left: 1.5rem; user-select: none; }
-.episode-item {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.25rem 0;
-  color: #ccc;
-  font-size: 0.9rem;
-  cursor: pointer;
-  border-radius: 4px;
-}
-.episode-item:hover { background: rgba(255,255,255,0.05); }
-.no-pointer { pointer-events: none; }
-.dialog-footer {
-  margin-top: 1rem;
-  text-align: right;
-  position: sticky;
-  bottom: 0;
-  background: var(--p-dialog-background, #1e1e2e);
-  padding: 0.75rem 0 0;
-  border-top: 1px solid rgba(255,255,255,0.1);
-}

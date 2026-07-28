@@ -8,16 +8,16 @@ import { ProgressBarModule } from 'primeng/progressbar';
 import { Select } from 'primeng/select';
 import { Toast } from 'primeng/toast';
 import { Dialog } from 'primeng/dialog';
-import { Checkbox } from 'primeng/checkbox';
 import { MessageService } from 'primeng/api';
 import { ApiService } from '../../services/api.service';
-import { SSEService, DownloadEvent } from '../../services/sse.service';
+import { SSEService } from '../../services/sse.service';
 import { getLanguageOptions } from '../../shared/languages';
+import { EpisodeSelectorComponent, EpisodeSaveResult } from '../../components/episode-selector/episode-selector.component';
 import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-content-details',
-  imports: [CommonModule, FormsModule, Button, Tag, ProgressBarModule, Select, Toast, Dialog, Checkbox],
+  imports: [CommonModule, FormsModule, Button, Tag, ProgressBarModule, Select, Toast, Dialog, EpisodeSelectorComponent],
   providers: [MessageService],
   templateUrl: './content-details.component.html',
   styleUrl: './content-details.component.scss',
@@ -39,11 +39,8 @@ export class ContentDetailsComponent implements OnInit, OnDestroy {
   selectedLanguage = '';
   groupedEpisodes: { number: number; episodes: any[] }[] = [];
 
-  // Add episodes dialog
-  showAddEpisodesDialog = false;
-  tmdbSeasons: any[] = [];
-  loadingTmdbSeasons = false;
-  private lastAddEpisodeClick: { season: any; index: number } | null = null;
+  // Episode selector
+  showEpisodeSelector = false;
 
   // Episode subtitle dialog
   showEpisodeSubDialog = false;
@@ -244,132 +241,17 @@ export class ContentDetailsComponent implements OnInit, OnDestroy {
     });
   }
 
-  // Add episodes dialog
+  // Episode selector
   openAddEpisodesDialog(): void {
-    this.showAddEpisodesDialog = true;
-    this.tmdbSeasons = [];
-    this.loadingTmdbSeasons = true;
-
-    this.api.getSeriesSeasons(this.media.tmdb_id).subscribe({
-      next: (res) => {
-        this.tmdbSeasons = res.seasons.map((s: any) => ({ ...s, selected: false, episodes: null }));
-        let pending = this.tmdbSeasons.length;
-
-        for (const season of this.tmdbSeasons) {
-          this.api.getSeasonEpisodes(this.media.tmdb_id, season.season_number).subscribe({
-            next: (epRes) => {
-              season.episodes = epRes.episodes.map((ep: any) => {
-                const existing = this.episodes.find(
-                  e => e.season_number === season.season_number && e.episode_number === ep.episode_number
-                );
-                return { ...ep, selected: !!existing, alreadyAdded: !!existing, existingId: existing?.id };
-              });
-              this.onAddEpisodeToggle(season);
-              pending--;
-              if (pending === 0) {
-                this.loadingTmdbSeasons = false;
-              }
-              this.cdr.detectChanges();
-            }
-          });
-        }
-        this.cdr.detectChanges();
-      }
-    });
+    this.showEpisodeSelector = true;
   }
 
-  toggleAddSeason(season: any): void {
-    if (season.episodes) {
-      for (const ep of season.episodes) {
-        ep.selected = season.selected;
-      }
-    }
-  }
-
-  onAddEpisodeClick(event: MouseEvent, season: any, ep: any): void {
-    if (event.shiftKey && this.lastAddEpisodeClick && this.lastAddEpisodeClick.season === season) {
-      const episodes = season.episodes;
-      const currentIndex = episodes.indexOf(ep);
-      const lastIndex = this.lastAddEpisodeClick.index;
-      const start = Math.min(currentIndex, lastIndex);
-      const end = Math.max(currentIndex, lastIndex);
-      const value = !ep.selected;
-      for (let i = start; i <= end; i++) {
-        episodes[i].selected = value;
-      }
-      this.onAddEpisodeToggle(season);
-    } else {
-      ep.selected = !ep.selected;
-      this.onAddEpisodeToggle(season);
-    }
-    this.lastAddEpisodeClick = { season, index: season.episodes.indexOf(ep) };
-  }
-
-  onAddEpisodeToggle(season: any): void {
-    if (season.episodes) {
-      season.selected = season.episodes.length > 0 && season.episodes.every((ep: any) => ep.selected);
-    }
-  }
-
-  hasEpisodeChanges(): boolean {
-    return this.tmdbSeasons.some(s => s.episodes?.some((ep: any) =>
-      (ep.selected && !ep.alreadyAdded) || (!ep.selected && ep.alreadyAdded)
-    ));
-  }
-
-  saveEpisodeChanges(): void {
-    const toAdd: { season: number; episode: number; title?: string }[] = [];
-    const toRemove: number[] = [];
-
-    for (const season of this.tmdbSeasons) {
-      if (season.episodes) {
-        for (const ep of season.episodes) {
-          if (ep.selected && !ep.alreadyAdded) {
-            toAdd.push({ season: season.season_number, episode: ep.episode_number, title: ep.name });
-          } else if (!ep.selected && ep.alreadyAdded && ep.existingId) {
-            toRemove.push(ep.existingId);
-          }
-        }
-      }
-    }
-
-    if (toAdd.length === 0 && toRemove.length === 0) return;
-
-    let pending = 0;
-    if (toRemove.length > 0) pending++;
-    if (toAdd.length > 0) pending++;
-
-    const done = () => {
-      pending--;
-      if (pending === 0) {
-        this.showAddEpisodesDialog = false;
-        const parts: string[] = [];
-        if (toAdd.length > 0) parts.push(`${toAdd.length} added`);
-        if (toRemove.length > 0) parts.push(`${toRemove.length} removed`);
-        this.messageService.add({ severity: 'success', summary: 'Updated', detail: `Episodes: ${parts.join(', ')}` });
-        this.loadMedia(this.media.id);
-      }
-    };
-
-    if (toRemove.length > 0) {
-      let removePending = toRemove.length;
-      for (const id of toRemove) {
-        this.api.removeEpisode(id).subscribe({
-          next: () => { removePending--; if (removePending === 0) done(); },
-          error: () => { removePending--; if (removePending === 0) done(); }
-        });
-      }
-    }
-
-    if (toAdd.length > 0) {
-      this.api.addEpisodes(this.media.id, toAdd).subscribe({
-        next: () => done(),
-        error: (err) => {
-          this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error?.error || 'Failed to add' });
-          done();
-        }
-      });
-    }
+  onEpisodesSaved(result: EpisodeSaveResult): void {
+    const parts: string[] = [];
+    if (result.added > 0) parts.push(`${result.added} added`);
+    if (result.removed > 0) parts.push(`${result.removed} removed`);
+    this.messageService.add({ severity: 'success', summary: 'Updated', detail: `Episodes: ${parts.join(', ')}` });
+    this.loadMedia(this.media.id);
   }
 
   formatSpeed(bytesPerSec: number): string {
