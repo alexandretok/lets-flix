@@ -111,12 +111,59 @@ export async function catalogRoutes(app: FastifyInstance): Promise<void> {
     return { media, episodes };
   });
 
+  app.post('/api/media/:mediaId/episodes', async (request, reply) => {
+    const { mediaId } = request.params as { mediaId: string };
+    const { episodes: newEpisodes } = request.body as {
+      episodes: { season: number; episode: number; title?: string }[];
+    };
+    const id = parseInt(mediaId, 10);
+    const media = mediaRepository.findById(id);
+
+    if (!media) {
+      return reply.status(404).send({ error: 'Media not found' });
+    }
+
+    if (media.type !== 'series') {
+      return reply.status(400).send({ error: 'Can only add episodes to a series' });
+    }
+
+    const episodeData = newEpisodes.map(ep => ({
+      media_id: id,
+      season_number: ep.season,
+      episode_number: ep.episode,
+      title: ep.title,
+    }));
+
+    episodesRepository.createBatch(episodeData);
+    catalogRepository.addToCatalog(request.user.userId, id);
+    const episodes = episodesRepository.findByMediaId(id);
+    return { episodes };
+  });
+
+  app.delete('/api/episodes/:episodeId', async (request, reply) => {
+    const { episodeId } = request.params as { episodeId: string };
+    const id = parseInt(episodeId, 10);
+    const episode = episodesRepository.findById(id);
+
+    if (!episode) {
+      return reply.status(404).send({ error: 'Episode not found' });
+    }
+
+    episodesRepository.deleteById(id);
+    return { message: 'Episode removed' };
+  });
+
   app.delete('/api/catalog/:mediaId', async (request, reply) => {
     const { mediaId } = request.params as { mediaId: string };
     const id = parseInt(mediaId, 10);
 
     if (!catalogRepository.isInCatalog(request.user.userId, id)) {
       return reply.status(404).send({ error: 'Not in catalog' });
+    }
+
+    const media = mediaRepository.findById(id);
+    if (media && media.type === 'series') {
+      episodesRepository.deleteByMediaId(id);
     }
 
     catalogRepository.removeFromCatalog(request.user.userId, id);
@@ -129,6 +176,22 @@ export async function catalogRoutes(app: FastifyInstance): Promise<void> {
 
     if (!media) {
       return reply.status(404).send({ error: 'Media not found' });
+    }
+
+    let episodes: any[] = [];
+    if (media.type === 'series') {
+      episodes = episodesRepository.findByMediaId(media.id);
+    }
+
+    return { media, episodes };
+  });
+
+  app.get('/api/media/by-tmdb/:tmdbId', async (request, reply) => {
+    const { tmdbId } = request.params as { tmdbId: string };
+    const media = mediaRepository.findByTmdbId(parseInt(tmdbId, 10));
+
+    if (!media) {
+      return reply.status(404).send({ error: 'Not in catalog' });
     }
 
     let episodes: any[] = [];

@@ -1,4 +1,11 @@
+:host {
+  display: block;
+  overflow: hidden;
+  width: 100%;
+}
+
 .home-container {
+  width: 100%;
   max-width: 1200px;
 }
 
@@ -30,6 +37,7 @@
 
 .trending-section {
   margin-bottom: 2.5rem;
+  overflow: hidden;
 }
 
 .section-header {
@@ -62,14 +70,15 @@
 
 .carousel-wrapper {
   overflow-x: auto;
-  margin: 0 -0.5rem;
+  overflow-y: hidden;
+  width: 100%;
   padding-bottom: 0.5rem;
 }
 
 .carousel {
   display: flex;
   gap: 1rem;
-  padding: 0 0.5rem;
+  width: max-content;
 }
 
 .media-card {
@@ -158,4 +167,137 @@
 .carousel-wrapper::-webkit-scrollbar-thumb {
   background: rgba(255, 255, 255, 0.15);
   border-radius: 3px;
+}
+
+.detail-popup {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.detail-top {
+  display: flex;
+  gap: 1.25rem;
+}
+
+.detail-poster {
+  flex-shrink: 0;
+  width: 140px;
+}
+
+.detail-poster img {
+  width: 100%;
+  border-radius: 10px;
+}
+
+.placeholder-poster-sm {
+  width: 100%;
+  aspect-ratio: 2/3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #1a1a2e;
+  border-radius: 10px;
+  font-size: 2rem;
+  color: #555;
+}
+
+.detail-meta {
+  flex: 1;
+}
+
+.detail-badges {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.75rem;
+}
+
+.type-badge,
+.year-badge {
+  font-size: 0.8rem;
+  padding: 0.2rem 0.6rem;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.08);
+  color: #ccc;
+}
+
+.rating-badge-inline {
+  font-size: 0.8rem;
+  padding: 0.2rem 0.6rem;
+  border-radius: 6px;
+  background: rgba(245, 197, 24, 0.15);
+  color: #f5c518;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.rating-badge-inline i {
+  font-size: 0.7rem;
+}
+
+.detail-overview {
+  color: #b0b0b0;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  margin: 0;
+}
+
+.detail-actions {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.loading-episodes {
+  text-align: center;
+  padding: 1rem;
+  color: #a0a0a0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.episodes-selector {
+  max-height: 40vh;
+  overflow-y: auto;
+}
+
+.season-block {
+  margin-bottom: 1rem;
+}
+
+.season-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: bold;
+  color: #e0e0e0;
+  margin-bottom: 0.5rem;
+}
+
+.episodes-list {
+  padding-left: 1.5rem;
+  user-select: none;
+}
+
+.episode-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.25rem 0;
+  color: #ccc;
+  font-size: 0.9rem;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.episode-item:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.no-pointer {
+  pointer-events: none;
 }

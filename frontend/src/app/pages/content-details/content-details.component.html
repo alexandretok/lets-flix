@@ -13,7 +13,7 @@
         <h1>{{ media.title }}</h1>
         <div class="meta-row">
           <p-tag [value]="media.type" severity="info" />
-          <p-tag [value]="media.status" [severity]="getStatusSeverity(media.status)" />
+          <p-tag [value]="getStatusLabel(media.status)" [severity]="getStatusSeverity(media.status)" />
         </div>
         <p class="overview">{{ media.overview }}</p>
 
@@ -33,28 +33,34 @@
               <span class="speed">{{ formatSpeed(downloadSpeed) }}</span>
             </div>
           }
+          <p-button label="Remove from Catalog" icon="pi pi-trash" severity="secondary" [outlined]="true" (onClick)="removeFromCatalog()" />
         </div>
 
-        <div class="subtitle-section">
-          <h3>Subtitles</h3>
-          <div class="subtitle-downloader">
-            <p-select [options]="languages" [(ngModel)]="selectedLanguage" optionLabel="label" optionValue="value" placeholder="Select language" />
-            <p-button label="Download" icon="pi pi-download" size="small" (onClick)="downloadSubtitle()" [disabled]="!selectedLanguage" />
-          </div>
-          @if (subtitles.length > 0) {
-            <div class="subtitle-list">
-              @for (sub of subtitles; track sub.id) {
-                <span class="subtitle-tag"><i class="pi pi-file"></i> {{ sub.language_code }}</span>
-              }
+        @if (media.type === 'movie') {
+          <div class="subtitle-section">
+            <h3>Subtitles</h3>
+            <div class="subtitle-downloader">
+              <p-select [options]="languages" [(ngModel)]="selectedLanguage" optionLabel="label" optionValue="value" placeholder="Select language" />
+              <p-button label="Download" icon="pi pi-download" size="small" (onClick)="downloadSubtitle()" [disabled]="!selectedLanguage" />
             </div>
-          }
-        </div>
+            @if (subtitles.length > 0) {
+              <div class="subtitle-list">
+                @for (sub of subtitles; track sub.id) {
+                  <span class="subtitle-tag"><i class="pi pi-file"></i> {{ sub.language_code }}</span>
+                }
+              </div>
+            }
+          </div>
+        }
       </div>
     </div>
 
-    @if (media.type === 'series' && episodes.length > 0) {
+    @if (media.type === 'series') {
       <div class="episodes-section">
-        <h2>Episodes</h2>
+        <div class="episodes-header">
+          <h2>Episodes</h2>
+          <p-button label="Add Episodes" icon="pi pi-plus" size="small" severity="danger" (onClick)="openAddEpisodesDialog()" />
+        </div>
         @for (season of groupedEpisodes; track season.number) {
           <div class="season-group">
             <h3>Season {{ season.number }}</h3>
@@ -63,16 +69,18 @@
                 <div class="episode-row">
                   <span class="ep-number">E{{ ep.episode_number }}</span>
                   <span class="ep-title">{{ ep.title || 'Episode ' + ep.episode_number }}</span>
-                  <p-tag [value]="ep.status" [severity]="getStatusSeverity(ep.status)" />
+                  <p-tag [value]="getStatusLabel(ep.status)" [severity]="getStatusSeverity(ep.status)" />
                   @if (ep.status === 'pending') {
-                    <p-button icon="pi pi-download" [text]="true" size="small" (onClick)="startEpisodeDownload(ep.id)" />
+                    <p-button icon="pi pi-download" [text]="true" size="small" (onClick)="startEpisodeDownload(ep.id)" pTooltip="Start download" />
                   }
                   @if (ep.status === 'not_found') {
                     <p-button icon="pi pi-refresh" [text]="true" size="small" severity="warn" (onClick)="retryEpisodeSearch(ep.id)" />
                   }
                   @if (ep.status === 'downloaded') {
                     <p-button icon="pi pi-play" [text]="true" size="small" severity="success" (onClick)="playEpisode(ep.id)" />
+                    <p-button icon="pi pi-language" [text]="true" size="small" (onClick)="openEpisodeSubtitleDialog(ep)" pTooltip="Subtitles" />
                   }
+                  <p-button icon="pi pi-trash" [text]="true" size="small" severity="secondary" (onClick)="removeEpisode(ep.id)" />
                 </div>
               }
             </div>
@@ -82,3 +90,48 @@
     }
   </div>
 }
+
+<p-dialog header="Manage Episodes" [(visible)]="showAddEpisodesDialog" [modal]="true" [style]="{width: '500px'}" [draggable]="false">
+  @if (loadingTmdbSeasons) {
+    <div class="loading-spinner"><i class="pi pi-spin pi-spinner" style="font-size: 1.5rem;"></i> Loading...</div>
+  }
+  <div class="episodes-selector">
+    @for (season of tmdbSeasons; track season.season_number) {
+      <div class="season-block">
+        <div class="season-header">
+          <p-checkbox [(ngModel)]="season.selected" [binary]="true" (onChange)="toggleAddSeason(season)" />
+          <span>{{ season.name }} ({{ season.episode_count }} episodes)</span>
+        </div>
+        @if (season.episodes) {
+          <div class="episodes-list-add">
+            @for (ep of season.episodes; track ep.episode_number) {
+              <div class="episode-item-add" (click)="onAddEpisodeClick($event, season, ep)">
+                <p-checkbox [ngModel]="ep.selected" [binary]="true" class="no-pointer" />
+                <span>E{{ ep.episode_number }} - {{ ep.name }}</span>
+              </div>
+            }
+          </div>
+        }
+      </div>
+    }
+  </div>
+  <div class="dialog-footer">
+    <p-button label="Save Changes" icon="pi pi-check" severity="danger" (onClick)="saveEpisodeChanges()" [disabled]="!hasEpisodeChanges()" />
+  </div>
+</p-dialog>
+
+<p-dialog [header]="'Subtitles - E' + selectedEpisodeForSub?.episode_number" [(visible)]="showEpisodeSubDialog" [modal]="true" [style]="{width: '400px'}" [draggable]="false">
+  @if (selectedEpisodeForSub) {
+    <div class="subtitle-downloader">
+      <p-select [options]="languages" [(ngModel)]="selectedLanguage" optionLabel="label" optionValue="value" placeholder="Select language" />
+      <p-button label="Download" icon="pi pi-download" size="small" (onClick)="downloadEpisodeSubtitle()" [disabled]="!selectedLanguage" />
+    </div>
+    @if (episodeSubtitles.length > 0) {
+      <div class="subtitle-list">
+        @for (sub of episodeSubtitles; track sub.id) {
+          <span class="subtitle-tag"><i class="pi pi-file"></i> {{ sub.language_code }}</span>
+        }
+      </div>
+    }
+  }
+</p-dialog>

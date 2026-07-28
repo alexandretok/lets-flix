@@ -50,6 +50,18 @@ export class ApiService {
     return this.http.delete(`/api/catalog/${mediaId}`);
   }
 
+  getMediaByTmdbId(tmdbId: number): Observable<{ media: any; episodes: any[] }> {
+    return this.http.get<{ media: any; episodes: any[] }>(`/api/media/by-tmdb/${tmdbId}`);
+  }
+
+  addEpisodes(mediaId: number, episodes: { season: number; episode: number; title?: string }[]): Observable<{ episodes: any[] }> {
+    return this.http.post<{ episodes: any[] }>(`/api/media/${mediaId}/episodes`, { episodes });
+  }
+
+  removeEpisode(episodeId: number): Observable<any> {
+    return this.http.delete(`/api/episodes/${episodeId}`);
+  }
+
   getMedia(id: number): Observable<{ media: any; episodes: any[] }> {
     return this.http.get<{ media: any; episodes: any[] }>(`/api/media/${id}`);
   }
@@ -86,8 +98,8 @@ export class ApiService {
     return this.http.get<{ results: any[] }>(`/api/subtitles/search?mediaId=${mediaId}&language=${language}`);
   }
 
-  downloadSubtitle(fileId: number, mediaId: number, language: string): Observable<any> {
-    return this.http.post('/api/subtitles/download', { fileId, mediaId, language });
+  downloadSubtitle(fileId: number, mediaId: number, language: string, episodeId?: number): Observable<any> {
+    return this.http.post('/api/subtitles/download', { fileId, mediaId, language, episodeId });
   }
 
   getStorageStatus(): Observable<any> {

@@ -44,4 +44,4 @@
   padding: 0.5rem;
 }
 .username { color: #e0e0e0; font-size: 0.9rem; }
-.main-content { flex: 1; margin-left: 240px; padding: 2rem; min-height: 100vh; }
+.main-content { flex: 1; margin-left: 240px; padding: 2rem; min-height: 100vh; overflow-x: hidden; min-width: 0; }

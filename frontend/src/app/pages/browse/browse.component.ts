@@ -31,6 +31,17 @@ export class BrowseComponent implements OnInit {
     this.router.navigate(['/browse', id]);
   }
 
+  getStatusLabel(status: string): string {
+    const map: Record<string, string> = {
+      pending: 'pending download',
+      downloading: 'downloading',
+      downloaded: 'downloaded',
+      searching: 'searching',
+      not_found: 'not found',
+    };
+    return map[status] || status;
+  }
+
   getStatusSeverity(status: string): 'success' | 'info' | 'warn' | 'danger' | 'secondary' {
     const map: Record<string, any> = {
       downloaded: 'success',

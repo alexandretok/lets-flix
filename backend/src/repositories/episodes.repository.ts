@@ -57,4 +57,12 @@ export const episodesRepository = {
     if (episodes.length === 0) return [];
     return this.findByMediaId(episodes[0].media_id);
   },
+
+  deleteById(id: number): void {
+    getDb().prepare('DELETE FROM episodes WHERE id = ?').run(id);
+  },
+
+  deleteByMediaId(mediaId: number): void {
+    getDb().prepare('DELETE FROM episodes WHERE media_id = ?').run(mediaId);
+  },
 };

@@ -65,7 +65,7 @@
   </div>
 }
 
-<p-dialog header="Select Episodes" [(visible)]="showSeriesDialog" [modal]="true" [style]="{width: '500px'}" [draggable]="false">
+<p-dialog header="Manage Episodes" [(visible)]="showSeriesDialog" [modal]="true" [style]="{width: '500px'}" [draggable]="false">
   @if (selectedSeries) {
     <div class="episodes-selector">
       @for (season of seasons; track season.season_number) {
@@ -88,7 +88,7 @@
       }
     </div>
     <div class="dialog-footer">
-      <p-button label="Add Selected" icon="pi pi-plus" severity="danger" (onClick)="addSelectedEpisodes()" [disabled]="!hasSelectedEpisodes()" />
+      <p-button label="Save Changes" icon="pi pi-check" severity="danger" (onClick)="saveEpisodeChanges()" [disabled]="!hasEpisodeChanges()" />
     </div>
   }
 </p-dialog>

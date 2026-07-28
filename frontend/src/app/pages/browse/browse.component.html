@@ -19,7 +19,7 @@
           } @else {
             <div class="placeholder-poster"><i class="pi pi-image"></i></div>
           }
-          <p-tag [value]="item.status" [severity]="getStatusSeverity(item.status)" class="status-badge" />
+          <p-tag [value]="getStatusLabel(item.status)" [severity]="getStatusSeverity(item.status)" class="status-badge" />
         </div>
         <div class="card-info">
           <h4>{{ item.title }}</h4>
