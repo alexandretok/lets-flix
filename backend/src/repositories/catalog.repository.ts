@@ -10,16 +10,28 @@ export interface UserCatalog {
 
 export interface CatalogMediaItem extends Media {
   added_at: string;
+  last_watched_at: string | null;
 }
 
 export const catalogRepository = {
   findByUser(userId: number): CatalogMediaItem[] {
     return getDb().prepare(`
-      SELECT m.*, uc.added_at
+      SELECT m.*, uc.added_at,
+        (SELECT MAX(wp.updated_at) FROM watch_progress wp
+         WHERE wp.user_id = uc.user_id
+         AND (wp.media_id = m.id OR wp.episode_id IN (SELECT e.id FROM episodes e WHERE e.media_id = m.id))
+        ) as last_watched_at
       FROM user_catalog uc
       JOIN media m ON m.id = uc.media_id
       WHERE uc.user_id = ?
-      ORDER BY uc.added_at DESC
+      ORDER BY
+        COALESCE(
+          (SELECT MAX(wp.updated_at) FROM watch_progress wp
+           WHERE wp.user_id = uc.user_id
+           AND (wp.media_id = m.id OR wp.episode_id IN (SELECT e.id FROM episodes e WHERE e.media_id = m.id))
+          ),
+          uc.added_at
+        ) DESC
     `).all(userId) as CatalogMediaItem[];
   },
 

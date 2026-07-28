@@ -1,8 +1,26 @@
 <div class="browse-header">
   <h1>My Catalog</h1>
-  <a mat-flat-button color="primary" routerLink="/search">
-    <mat-icon>add</mat-icon> Add Content
-  </a>
+  <div class="header-actions">
+    <mat-form-field appearance="outline" class="filter-field">
+      <mat-label>Type</mat-label>
+      <mat-select [(ngModel)]="filterType" (selectionChange)="onFilterChange()">
+        @for (opt of filterOptions; track opt.value) {
+          <mat-option [value]="opt.value">{{ opt.label }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+    <mat-form-field appearance="outline" class="sort-field">
+      <mat-label>Sort by</mat-label>
+      <mat-select [(ngModel)]="sortBy" (selectionChange)="onSortChange()">
+        @for (opt of sortOptions; track opt.value) {
+          <mat-option [value]="opt.value">{{ opt.label }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+    <a mat-flat-button color="primary" routerLink="/search">
+      <mat-icon>add</mat-icon> Add Content
+    </a>
+  </div>
 </div>
 @if (catalog.length === 0) {
   <div class="empty-state">
@@ -15,7 +33,7 @@
   </div>
 } @else {
   <div class="catalog-grid">
-    @for (item of catalog; track item.id) {
+    @for (item of sortedCatalog; track item.id) {
       <div class="media-card" (click)="openDetails(item.id)">
         <div class="poster">
           @if (item.poster_url) {
