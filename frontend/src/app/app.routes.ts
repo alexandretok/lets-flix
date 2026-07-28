@@ -15,6 +15,7 @@ export const routes: Routes = [
       { path: 'browse', loadComponent: () => import('./pages/browse/browse.component').then(m => m.BrowseComponent) },
       { path: 'browse/:id', loadComponent: () => import('./pages/content-details/content-details.component').then(m => m.ContentDetailsComponent) },
       { path: 'search', loadComponent: () => import('./pages/search/search.component').then(m => m.SearchComponent) },
+      { path: 'downloads', canActivate: [adminGuard], loadComponent: () => import('./pages/downloads/downloads.component').then(m => m.DownloadsComponent) },
       { path: 'users', canActivate: [adminGuard], loadComponent: () => import('./pages/users/users.component').then(m => m.UsersComponent) },
       { path: 'settings', loadComponent: () => import('./pages/settings/settings.component').then(m => m.SettingsComponent) },
     ]

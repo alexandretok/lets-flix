@@ -13,6 +13,7 @@ import { storageRoutes } from './routes/storage.routes.js';
 import { streamRoutes } from './routes/stream.routes.js';
 import { progressRoutes } from './routes/progress.routes.js';
 import { settingsRoutes } from './routes/settings.routes.js';
+import { torrentsRoutes } from './routes/torrents.routes.js';
 import { downloadService } from './services/download.service.js';
 import { subtitlesService } from './services/subtitles.service.js';
 import { sseService } from './services/sse.service.js';
@@ -55,6 +56,7 @@ await app.register(storageRoutes);
 await app.register(streamRoutes);
 await app.register(progressRoutes);
 await app.register(settingsRoutes);
+await app.register(torrentsRoutes);
 
 app.get('/api/health', async () => {
   return { status: 'ok', timestamp: new Date().toISOString() };

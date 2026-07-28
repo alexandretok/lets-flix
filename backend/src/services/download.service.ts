@@ -15,8 +15,31 @@ export interface DownloadProgress {
   status: string;
 }
 
+export interface TorrentInfo {
+  key: string;
+  mediaId: number;
+  episodeId?: number;
+  mediaTitle: string;
+  name: string;
+  progress: number;
+  downloadSpeed: number;
+  uploadSpeed: number;
+  downloaded: number;
+  uploaded: number;
+  size: number;
+  numPeers: number;
+  numSeeds: number;
+  ratio: number;
+  timeRemaining: number;
+  paused: boolean;
+  done: boolean;
+  infoHash: string;
+  path: string;
+}
+
 class DownloadService extends EventEmitter {
   private activeDownloads: Map<string, { progress: number; speed: number }> = new Map();
+  private torrentMeta: Map<string, { mediaId: number; episodeId?: number; mediaTitle: string }> = new Map();
   private webtorrentClient: any = null;
 
   async initialize(): Promise<void> {
@@ -107,6 +130,8 @@ class DownloadService extends EventEmitter {
 
   private simulateDownload(mediaId: number, episodeId: number | undefined, destPath: string): { success: boolean; message: string } {
     const key = episodeId ? `ep-${episodeId}` : `media-${mediaId}`;
+    const media = mediaRepository.findById(mediaId);
+    const mediaTitle = media?.title || 'Unknown';
 
     if (episodeId) {
       episodesRepository.updateStatus(episodeId, 'downloading');
@@ -115,6 +140,7 @@ class DownloadService extends EventEmitter {
     }
 
     this.activeDownloads.set(key, { progress: 0, speed: 0 });
+    this.torrentMeta.set(key, { mediaId, episodeId, mediaTitle });
 
     let progress = 0;
     const interval = setInterval(() => {
@@ -164,6 +190,8 @@ class DownloadService extends EventEmitter {
     }
 
     const key = episodeId ? `ep-${episodeId}` : `media-${mediaId}`;
+    const media = mediaRepository.findById(mediaId);
+    const mediaTitle = media?.title || 'Unknown';
 
     if (episodeId) {
       episodesRepository.updateStatus(episodeId, 'downloading');
@@ -174,6 +202,7 @@ class DownloadService extends EventEmitter {
     try {
       this.webtorrentClient.add(magnetUri, { path: destPath }, (torrent: any) => {
         this.activeDownloads.set(key, { progress: 0, speed: 0 });
+        this.torrentMeta.set(key, { mediaId, episodeId, mediaTitle });
 
         torrent.on('download', () => {
           const progress = Math.round(torrent.progress * 100);
@@ -242,6 +271,189 @@ class DownloadService extends EventEmitter {
       });
     }
     return downloads;
+  }
+
+  getAllTorrents(): TorrentInfo[] {
+    if (!this.webtorrentClient) {
+      return this.getMockTorrents();
+    }
+
+    return this.webtorrentClient.torrents.map((torrent: any) => {
+      const key = this.findKeyByInfoHash(torrent.infoHash);
+      const meta = key ? this.torrentMeta.get(key) : null;
+
+      return {
+        key: key || torrent.infoHash,
+        mediaId: meta?.mediaId || 0,
+        episodeId: meta?.episodeId,
+        mediaTitle: meta?.mediaTitle || 'Unknown',
+        name: torrent.name || 'Unknown',
+        progress: Math.round(torrent.progress * 100),
+        downloadSpeed: torrent.downloadSpeed || 0,
+        uploadSpeed: torrent.uploadSpeed || 0,
+        downloaded: torrent.downloaded || 0,
+        uploaded: torrent.uploaded || 0,
+        size: torrent.length || 0,
+        numPeers: torrent.numPeers || 0,
+        numSeeds: torrent.numPeers || 0,
+        ratio: torrent.ratio || 0,
+        timeRemaining: torrent.timeRemaining || 0,
+        paused: torrent.paused || false,
+        done: torrent.done || false,
+        infoHash: torrent.infoHash,
+        path: torrent.path || '',
+      } as TorrentInfo;
+    });
+  }
+
+  private getMockTorrents(): TorrentInfo[] {
+    const torrents: TorrentInfo[] = [];
+    for (const [key, value] of this.activeDownloads.entries()) {
+      const meta = this.torrentMeta.get(key);
+      torrents.push({
+        key,
+        mediaId: meta?.mediaId || 0,
+        episodeId: meta?.episodeId,
+        mediaTitle: meta?.mediaTitle || 'Unknown',
+        name: `${meta?.mediaTitle || 'Unknown'}.torrent`,
+        progress: value.progress,
+        downloadSpeed: value.speed,
+        uploadSpeed: Math.random() * 500_000,
+        downloaded: Math.round((value.progress / 100) * 1_500_000_000),
+        uploaded: Math.round(Math.random() * 200_000_000),
+        size: 1_500_000_000,
+        numPeers: Math.floor(Math.random() * 30) + 1,
+        numSeeds: Math.floor(Math.random() * 50) + 1,
+        ratio: Math.random() * 2,
+        timeRemaining: value.progress < 100 ? Math.round(((100 - value.progress) / 10) * 1000) : 0,
+        paused: false,
+        done: value.progress >= 100,
+        infoHash: `mock-${key}`,
+        path: '',
+      });
+    }
+
+    // Also include completed downloads from the database
+    const downloaded = mediaRepository.findByStatus('downloaded');
+    for (const media of downloaded) {
+      if (media.disk_path) {
+        torrents.push({
+          key: `media-${media.id}`,
+          mediaId: media.id,
+          mediaTitle: media.title,
+          name: `${media.title}`,
+          progress: 100,
+          downloadSpeed: 0,
+          uploadSpeed: 0,
+          downloaded: 0,
+          uploaded: 0,
+          size: 0,
+          numPeers: 0,
+          numSeeds: 0,
+          ratio: 0,
+          timeRemaining: 0,
+          paused: false,
+          done: true,
+          infoHash: `completed-media-${media.id}`,
+          path: media.disk_path,
+        });
+      }
+    }
+
+    const downloadedEps = episodesRepository.findByStatus('downloaded');
+    for (const ep of downloadedEps) {
+      const media = mediaRepository.findById(ep.media_id);
+      if (ep.disk_path) {
+        torrents.push({
+          key: `ep-${ep.id}`,
+          mediaId: ep.media_id,
+          episodeId: ep.id,
+          mediaTitle: media?.title || 'Unknown',
+          name: `${media?.title || 'Unknown'} S${String(ep.season_number).padStart(2, '0')}E${String(ep.episode_number).padStart(2, '0')}`,
+          progress: 100,
+          downloadSpeed: 0,
+          uploadSpeed: 0,
+          downloaded: 0,
+          uploaded: 0,
+          size: 0,
+          numPeers: 0,
+          numSeeds: 0,
+          ratio: 0,
+          timeRemaining: 0,
+          paused: false,
+          done: true,
+          infoHash: `completed-ep-${ep.id}`,
+          path: ep.disk_path,
+        });
+      }
+    }
+
+    return torrents;
+  }
+
+  private findKeyByInfoHash(infoHash: string): string | undefined {
+    if (!this.webtorrentClient) return undefined;
+    for (const [key] of this.activeDownloads.entries()) {
+      const torrent = this.webtorrentClient.torrents.find((t: any) => {
+        const meta = this.torrentMeta.get(key);
+        return meta && t.infoHash === infoHash;
+      });
+      if (torrent) return key;
+    }
+    return undefined;
+  }
+
+  pauseTorrent(infoHash: string): boolean {
+    if (!this.webtorrentClient) return false;
+    const torrent = this.webtorrentClient.torrents.find((t: any) => t.infoHash === infoHash);
+    if (torrent) {
+      torrent.pause();
+      return true;
+    }
+    return false;
+  }
+
+  resumeTorrent(infoHash: string): boolean {
+    if (!this.webtorrentClient) return false;
+    const torrent = this.webtorrentClient.torrents.find((t: any) => t.infoHash === infoHash);
+    if (torrent) {
+      torrent.resume();
+      return true;
+    }
+    return false;
+  }
+
+  removeTorrent(infoHash: string): boolean {
+    if (!this.webtorrentClient) return false;
+    const torrent = this.webtorrentClient.torrents.find((t: any) => t.infoHash === infoHash);
+    if (torrent) {
+      torrent.destroy();
+      return true;
+    }
+    return false;
+  }
+
+  deleteFile(key: string): { success: boolean; message: string } {
+    const isEpisode = key.startsWith('ep-');
+    const id = parseInt(key.split('-').pop()!, 10);
+
+    if (isEpisode) {
+      const episode = episodesRepository.findById(id);
+      if (!episode) return { success: false, message: 'Episode not found' };
+      if (episode.disk_path && fs.existsSync(episode.disk_path)) {
+        fs.rmSync(episode.disk_path, { recursive: true, force: true });
+      }
+      episodesRepository.updateStatus(id, 'pending');
+      return { success: true, message: 'File deleted and status reset' };
+    } else {
+      const media = mediaRepository.findById(id);
+      if (!media) return { success: false, message: 'Media not found' };
+      if (media.disk_path && fs.existsSync(media.disk_path)) {
+        fs.rmSync(media.disk_path, { recursive: true, force: true });
+      }
+      mediaRepository.updateStatus(id, 'pending');
+      return { success: true, message: 'File deleted and status reset' };
+    }
   }
 
   async resumeDownloads(): Promise<void> {

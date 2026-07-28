@@ -125,4 +125,24 @@ export class ApiService {
   updateSettings(settings: any): Observable<any> {
     return this.http.put('/api/settings', { settings });
   }
+
+  getTorrents(): Observable<{ torrents: any[] }> {
+    return this.http.get<{ torrents: any[] }>('/api/torrents');
+  }
+
+  pauseTorrent(infoHash: string): Observable<any> {
+    return this.http.post(`/api/torrents/${infoHash}/pause`, {});
+  }
+
+  resumeTorrent(infoHash: string): Observable<any> {
+    return this.http.post(`/api/torrents/${infoHash}/resume`, {});
+  }
+
+  removeTorrent(infoHash: string): Observable<any> {
+    return this.http.post(`/api/torrents/${infoHash}/remove`, {});
+  }
+
+  deleteTorrentFile(key: string): Observable<any> {
+    return this.http.post('/api/torrents/delete-file', { key });
+  }
 }

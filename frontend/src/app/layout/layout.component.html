@@ -9,6 +9,7 @@
       <li><a routerLink="/search" routerLinkActive="active"><i class="pi pi-search"></i> Search</a></li>
       <li><a routerLink="/settings" routerLinkActive="active"><i class="pi pi-cog"></i> Settings</a></li>
       @if (authStore.isAdmin()) {
+        <li><a routerLink="/downloads" routerLinkActive="active"><i class="pi pi-cloud-download"></i> Downloads</a></li>
         <li><a routerLink="/users" routerLinkActive="active"><i class="pi pi-users"></i> Users</a></li>
       }
     </ul>
