@@ -146,3 +146,21 @@ lets-flix/
 │       └── services/     # HTTP & auth services
 └── plans/            # Development plans
 ```
+
+## Legal Disclaimer
+
+**This software is provided for educational and personal media management purposes only.**
+
+This project and its contributors do **not** condone, encourage, or facilitate the downloading, distribution, or consumption of copyrighted content without proper authorization from the rights holders. Users are solely responsible for ensuring that their use of this software complies with all applicable local, national, and international laws, including but not limited to copyright and intellectual property laws.
+
+By using this software, you acknowledge and agree that:
+
+1. **You will not use this software to download, stream, share, or distribute any content that is protected by copyright** unless you have explicit permission from the copyright holder or the content is in the public domain.
+2. **The authors, contributors, and owner of this repository accept no responsibility or liability** for any misuse of this software, including but not limited to copyright infringement, piracy, or any illegal activity conducted by its users.
+3. **You assume all legal responsibility** for any content you acquire, store, or distribute using this software. Any legal consequences arising from misuse are entirely your own.
+4. **This software does not host, index, or provide access to any copyrighted material.** It merely provides tools for managing media files that the user has lawfully obtained.
+5. **No warranty is provided**, either express or implied. This software is provided "as is" without any guarantees of legality, fitness for a particular purpose, or compliance with any jurisdiction's laws.
+
+If you are a copyright holder and believe this software is being used to infringe upon your rights, please contact the repository owner directly.
+
+**Use this software responsibly and lawfully. When in doubt, do not download or share content you do not have the rights to.**
