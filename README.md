@@ -2,6 +2,8 @@
 
 > **Note:** This project is still under active development and is not yet ready for testing or production use.
 
+**License:** [PolyForm Noncommercial 1.0.0](https://polyformproject.org/licenses/noncommercial/1.0.0) — Free for personal use. Commercial use is prohibited.
+
 Self-hosted, multi-user streaming application designed for low-resource Linux VPS environments.
 
 ## Features
