@@ -20,6 +20,13 @@
   <div class="loading"><mat-spinner diameter="40"></mat-spinner></div>
 }
 
+@if (!loading && hasSearched && results.length === 0) {
+  <div class="no-results">
+    <mat-icon>search_off</mat-icon>
+    <p>No results found for "{{ lastSearchQuery }}"</p>
+  </div>
+}
+
 <div class="results-grid">
   @for (item of results; track item.id) {
     <div class="result-card" [class.expanded]="item._expanded">
@@ -69,6 +76,23 @@
     </div>
   }
 </div>
+
+@if (totalResults > 0) {
+  <div class="results-meta">
+    <span class="total-results">{{ totalResults }} results found</span>
+  </div>
+}
+@if (totalPages > 1) {
+  <div class="pagination">
+    <button mat-icon-button (click)="goToPage(currentPage - 1)" [disabled]="currentPage <= 1">
+      <mat-icon>chevron_left</mat-icon>
+    </button>
+    <span class="page-info">Page {{ currentPage }} of {{ totalPages }}</span>
+    <button mat-icon-button (click)="goToPage(currentPage + 1)" [disabled]="currentPage >= totalPages">
+      <mat-icon>chevron_right</mat-icon>
+    </button>
+  </div>
+}
 
 @if (previewImageUrl) {
   <div class="image-overlay" (click)="closeImagePreview()">

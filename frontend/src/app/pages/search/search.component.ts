@@ -30,6 +30,12 @@ export class SearchComponent implements OnInit {
   selectedSeries: any = null;
   previewImageUrl: string | null = null;
 
+  currentPage = 1;
+  totalPages = 0;
+  totalResults = 0;
+  hasSearched = false;
+  lastSearchQuery = '';
+
   episodeSelectorTmdbId = 0;
   episodeSelectorMediaId: number | null = null;
   episodeSelectorExisting: any[] = [];
@@ -42,15 +48,23 @@ export class SearchComponent implements OnInit {
     }
   }
 
-  performSearch(): void {
+  performSearch(page = 1): void {
     if (!this.query || this.query.trim().length < 2) {
       this.results = [];
       return;
     }
     this.loading = true;
-    this.api.searchTMDB(this.query.trim()).subscribe({
+    this.results = [];
+    this.totalResults = 0;
+    this.hasSearched = true;
+    this.lastSearchQuery = this.query.trim();
+    this.cdr.markForCheck();
+    this.api.searchTMDB(this.query.trim(), page).subscribe({
       next: (res) => {
         this.results = res.results;
+        this.currentPage = res.page;
+        this.totalPages = res.total_pages;
+        this.totalResults = res.total_results;
         this.loading = false;
         this.cdr.markForCheck();
       },
@@ -59,6 +73,12 @@ export class SearchComponent implements OnInit {
         this.cdr.markForCheck();
       }
     });
+  }
+
+  goToPage(page: number): void {
+    if (page >= 1 && page <= this.totalPages) {
+      this.performSearch(page);
+    }
   }
 
   openImagePreview(url: string, event: Event): void {

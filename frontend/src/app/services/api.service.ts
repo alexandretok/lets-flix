@@ -34,8 +34,10 @@ export class ApiService {
     return this.http.get<{ movies: any[]; tv: any[] }>('/api/trending');
   }
 
-  searchTMDB(query: string): Observable<{ results: any[] }> {
-    return this.http.get<{ results: any[] }>(`/api/search?query=${encodeURIComponent(query)}`);
+  searchTMDB(query: string, page = 1): Observable<{ results: any[]; page: number; total_pages: number; total_results: number }> {
+    return this.http.get<{ results: any[]; page: number; total_pages: number; total_results: number }>(
+      `/api/search?query=${encodeURIComponent(query)}&page=${page}`
+    );
   }
 
   getCatalog(): Observable<{ catalog: any[] }> {

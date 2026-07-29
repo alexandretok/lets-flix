@@ -18,12 +18,12 @@ export async function catalogRoutes(app: FastifyInstance): Promise<void> {
   });
 
   app.get('/api/search', async (request) => {
-    const { query } = request.query as { query?: string };
+    const { query, page } = request.query as { query?: string; page?: string };
     if (!query || query.trim().length === 0) {
-      return { results: [] };
+      return { results: [], page: 1, total_pages: 0, total_results: 0 };
     }
-    const results = await tmdbService.searchMulti(query);
-    return { results };
+    const pageNum = Math.max(1, parseInt(page || '1', 10) || 1);
+    return await tmdbService.searchMulti(query, pageNum);
   });
 
   app.get('/api/catalog', async (request) => {

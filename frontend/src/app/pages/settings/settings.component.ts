@@ -2,6 +2,7 @@ import { Component, inject, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatButtonModule } from '@angular/material/button';
@@ -12,7 +13,7 @@ import { getLanguageOptions } from '../../shared/languages';
 
 @Component({
   selector: 'app-settings',
-  imports: [CommonModule, FormsModule, MatFormFieldModule, MatSelectModule, MatSlideToggleModule, MatButtonModule, MatIconModule],
+  imports: [CommonModule, FormsModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatSlideToggleModule, MatButtonModule, MatIconModule],
   templateUrl: './settings.component.html',
   styleUrl: './settings.component.scss',
 })
@@ -27,6 +28,8 @@ export class SettingsComponent implements OnInit {
   saving = false;
 
   languageOptions = getLanguageOptions();
+  filteredLanguageOptions = this.languageOptions;
+  languageSearch = '';
 
   resolutionOptions = [
     { label: '720p', value: '720p' },
@@ -66,5 +69,17 @@ export class SettingsComponent implements OnInit {
         this.cdr.markForCheck();
       }
     });
+  }
+
+  filterLanguages(): void {
+    const term = this.languageSearch.toLowerCase();
+    this.filteredLanguageOptions = term
+      ? this.languageOptions.filter(l => l.label.toLowerCase().includes(term))
+      : this.languageOptions;
+  }
+
+  onLanguagePanelOpened(): void {
+    this.languageSearch = '';
+    this.filteredLanguageOptions = this.languageOptions;
   }
 }

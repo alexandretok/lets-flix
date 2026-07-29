@@ -5,8 +5,15 @@
     <h3>Subtitles</h3>
     <mat-form-field appearance="outline">
       <mat-label>Preferred Languages</mat-label>
-      <mat-select multiple [(ngModel)]="subtitleLanguages">
-        @for (lang of languageOptions; track lang.value) {
+      <mat-select multiple [(ngModel)]="subtitleLanguages" (openedChange)="$event && onLanguagePanelOpened()">
+        <div class="select-search">
+          <input matInput
+            placeholder="Search languages..."
+            [(ngModel)]="languageSearch"
+            (ngModelChange)="filterLanguages()"
+            (keydown)="$event.stopPropagation()" />
+        </div>
+        @for (lang of filteredLanguageOptions; track lang.value) {
           <mat-option [value]="lang.value">{{ lang.label }}</mat-option>
         }
       </mat-select>

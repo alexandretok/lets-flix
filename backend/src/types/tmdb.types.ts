@@ -8,6 +8,13 @@ export interface TmdbSearchResult {
   vote_average: number;
 }
 
+export interface TmdbSearchResponse {
+  results: TmdbSearchResult[];
+  page: number;
+  total_pages: number;
+  total_results: number;
+}
+
 export interface TmdbMovieDetails {
   id: number;
   title: string;

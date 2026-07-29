@@ -1,6 +1,6 @@
 import { config } from '../config/env.js';
-import { TmdbSearchResult, TmdbMovieDetails, TmdbSeriesDetails, TmdbEpisode } from '../types/index.js';
-export type { TmdbSearchResult, TmdbMovieDetails, TmdbSeriesDetails, TmdbEpisode } from '../types/index.js';
+import { TmdbSearchResult, TmdbSearchResponse, TmdbMovieDetails, TmdbSeriesDetails, TmdbEpisode } from '../types/index.js';
+export type { TmdbSearchResult, TmdbSearchResponse, TmdbMovieDetails, TmdbSeriesDetails, TmdbEpisode } from '../types/index.js';
 
 const TMDB_BASE_URL = 'https://api.themoviedb.org/3';
 const TMDB_IMAGE_BASE = 'https://image.tmdb.org/t/p/w500';
@@ -10,12 +10,12 @@ function posterUrl(path: string | null): string | null {
 }
 
 export const tmdbService = {
-  async searchMulti(query: string): Promise<TmdbSearchResult[]> {
+  async searchMulti(query: string, page = 1): Promise<TmdbSearchResponse> {
     const res = await fetch(
-      `${TMDB_BASE_URL}/search/multi?api_key=${config.tmdbApiKey}&query=${encodeURIComponent(query)}`
+      `${TMDB_BASE_URL}/search/multi?api_key=${config.tmdbApiKey}&query=${encodeURIComponent(query)}&page=${page}`
     );
     const data = await res.json() as any;
-    return (data.results || [])
+    const results = (data.results || [])
       .filter((r: any) => r.media_type === 'movie' || r.media_type === 'tv')
       .map((r: any) => ({
         id: r.id,
@@ -26,6 +26,12 @@ export const tmdbService = {
         release_date: r.release_date || r.first_air_date,
         vote_average: r.vote_average,
       }));
+    return {
+      results,
+      page: data.page || page,
+      total_pages: data.total_pages || 1,
+      total_results: data.total_results || results.length,
+    };
   },
 
   async getMovieDetails(tmdbId: number): Promise<TmdbMovieDetails> {
