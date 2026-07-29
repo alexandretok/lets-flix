@@ -161,6 +161,6 @@ By using this software, you acknowledge and agree that:
 4. **This software does not host, index, or provide access to any copyrighted material.** It merely provides tools for managing media files that the user has lawfully obtained.
 5. **No warranty is provided**, either express or implied. This software is provided "as is" without any guarantees of legality, fitness for a particular purpose, or compliance with any jurisdiction's laws.
 
-If you are a copyright holder and believe this software is being used to infringe upon your rights, please contact the repository owner directly.
+If you are a copyright holder and believe your rights are being infringed, your claim is with the individual user who downloaded or distributed the content, not with the authors or maintainers of this software.
 
 **Use this software responsibly and lawfully. When in doubt, do not download or share content you do not have the rights to.**
